@@ -106,6 +106,20 @@ export class SampleCommandContribution implements CommandContribution {
       return this.fileService.read(fileUri);
     }
 
+    // eslint-disable-next-line @typescript-eslint/tslint/config
+    protected async createRunAPI(yamlStr: string, checkpointStr: boolean, nameStr: string, descriptionStr: string) {
+    const bodyData = JSON.stringify({
+      // name: value01,
+      // describe: value02,
+      // base64: btoa(value03)
+      yaml: btoa(yamlStr),
+      metadata: {
+        checkpoint: checkpointStr,
+        name: nameStr,
+        description: descriptionStr
+      }
+    });
+
 }
 
 @injectable()
