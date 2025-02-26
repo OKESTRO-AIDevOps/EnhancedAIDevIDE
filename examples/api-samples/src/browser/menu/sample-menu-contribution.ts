@@ -107,6 +107,16 @@ export class SampleCommandContribution implements CommandContribution {
         const rootUri = firstRootUri.toString().replace('file://', '');
         this.fileService.createFileKetiGolang(new URI(rootUri + '/Dockerfile'));
       }
+    });
+    // 현재 열린 디렉토리에 go-lang 프로젝트 구조 생성
+    commands.registerCommand(InitGolangProject, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        alert(rootUri);
+
+        this.fileService.createFolder(new URI(rootUri + '/goProject'));
+      }
     });   
     }
 }
