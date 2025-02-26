@@ -120,6 +120,28 @@ export class SampleCommandContribution implements CommandContribution {
       }
     });
 
+    console.log('Translate result: ' + JSON.stringify(bodyData));
+
+    await fetch('http://hybrid.strato.co.kr:30121/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: bodyData
+    }).then(response => {
+      console.log('ok?: ', response.ok);
+      if (!response.ok) {
+        console.log('HTTP error', response.status);
+        alert('The ML Workload Run Has Failed!');
+      } else {
+        console.log('HTTP Result: ', response.status, ' _ ', response.statusText);
+        alert('ML Workload Has Run Successfully!');
+      }
+    });
+  }
+
 }
 
 @injectable()
