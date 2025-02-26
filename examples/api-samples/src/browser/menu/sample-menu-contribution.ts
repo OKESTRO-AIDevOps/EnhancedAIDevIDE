@@ -56,6 +56,10 @@ const MLPipelineCreateRunFunc: Command = {
   protected readonly windowService: WindowService;
   protected doOpenExternalLink = (url: string) => this.windowService.openNewWindow(url, { external: true });
 
+  @inject(TerminalService) protected readonly terminalService: TerminalService;
+  @inject(FileDialogService) protected readonly fileDialogService: FileDialogService;
+  @inject(RequestService) protected requestService: RequestService;
+
 const MakeCommand: Command = {
     id: 'make-command',
     label: 'Make Command'
