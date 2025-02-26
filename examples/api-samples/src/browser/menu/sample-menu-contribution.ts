@@ -68,6 +68,38 @@ export class SampleCommandContribution implements CommandContribution {
                 pick.show();
             }
         });
+
+        // 사용자가 선택한 Golang 실행 커멘드 메뉴
+    commands.registerCommand(RunGolangCommand, {
+      execute: async () => {
+        this.fileDialogService.showOpenDialog({
+          title: RunGolangCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+        }).then((selectUri: URI | undefined) => {
+          if (selectUri) {
+            const currentTerminal = this.terminalService.currentTerminal;
+
+            if (currentTerminal === undefined) {
+              alert('current terminal undefined!');
+              return;
+            } else {
+              const fileFullPath = selectUri.toString();
+              const filePathElement = selectUri.toString().split('/');
+              const filename = filePathElement[filePathElement.length - 1];
+              const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+              const runGolangCommandLine: CommandLineOptions = {
+                cwd: filePath,   // Command실행 경로
+                args: ['go', 'run', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                env: {}
+              };
+              currentTerminal.executeCommand(runGolangCommandLine);
+            }
+          } else {
+            alert('Not Select file!');
+          }
+        });
+      }
+    });
         
     }
 
