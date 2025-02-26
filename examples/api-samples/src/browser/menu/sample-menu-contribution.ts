@@ -55,6 +55,11 @@ const BuildDockerfileCommand: Command = {
   label: 'Build Dockerfile Command'
 };
 
+const runDockerImgCommand: Command = {
+  id: 'run-docker-img-command',
+  label: 'Run Docker Image Command'
+};
+
 // sub sub menu
 const JavaCommand: Command = {
     id: 'java-command',
