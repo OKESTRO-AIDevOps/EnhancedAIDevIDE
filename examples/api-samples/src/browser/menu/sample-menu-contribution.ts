@@ -18,8 +18,8 @@ import { ConfirmDialog, Dialog, QuickInputService } from '@theia/core/lib/browse
 import { ReactDialog } from '@theia/core/lib/browser/dialogs/react-dialog';
 import { SelectComponent } from '@theia/core/lib/browser/widgets/select-component';
 import {
-    Command, CommandContribution, CommandRegistry, MAIN_MENU_BAR,
-    MenuContribution, MenuModelRegistry, MenuNode, MessageService, SubMenuOptions
+  Command, CommandContribution, CommandRegistry, MAIN_MENU_BAR,
+  MenuContribution, MenuModelRegistry, MenuNode, MessageService, SubMenuOptions
 } from '@theia/core/lib/common';
 import { inject, injectable, interfaces } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
@@ -40,13 +40,38 @@ const MLPipelineCreateRunFunc: Command = {
   label: 'ML Pipeline Create Run Func'
 };
 
-//export class SampleCommandContribution implements CommandContribution 내부에 위쪽
-@inject(QuickInputService)
+const MakeCommand: Command = {
+  id: 'make-command',
+  label: 'Make Command'
+};
+
+const InitProjectDirectory: Command = {
+  id: 'init-project-directory',
+  label: 'Init Project directory'
+};
+// sub sub menu
+const JavaCommand: Command = {
+  id: 'java-command',
+  label: 'Generate Java Dockerfile'
+};
+const PythonCommand: Command = {
+  id: 'python-command',
+  label: 'Generate Python Dockerfile'
+};
+const GolangCommand: Command = {
+  id: 'golang-command',
+  label: 'Generate Go Dockerfile'
+};
+@injectable()
+export class SampleCommandContribution implements CommandContribution {
+
+  //export class SampleCommandContribution implements CommandContribution 내부에 위쪽
+  @inject(QuickInputService)
   protected readonly quickInputService: QuickInputService;
 
   @inject(MessageService)
   protected readonly messageService: MessageService;
- @inject(WorkspaceService) protected readonly workspaceService: WorkspaceService;
+  @inject(WorkspaceService) protected readonly workspaceService: WorkspaceService;
 
   @inject(MonacoEditorProvider) protected readonly monacoEditorProvider: MonacoEditorProvider;
 
@@ -60,51 +85,26 @@ const MLPipelineCreateRunFunc: Command = {
   @inject(FileDialogService) protected readonly fileDialogService: FileDialogService;
   @inject(RequestService) protected requestService: RequestService;
 
-const MakeCommand: Command = {
-    id: 'make-command',
-    label: 'Make Command'
-  };
+  @inject(QuickInputService)
+  protected readonly quickInputService: QuickInputService;
 
-  const InitProjectDirectory: Command = {
-    id: 'init-project-directory',
-    label: 'Init Project directory'
-  };
-  // sub sub menu
-  const JavaCommand: Command = {
-    id: 'java-command',
-    label: 'Generate Java Dockerfile'
-  };
-  const PythonCommand: Command = {
-    id: 'python-command',
-    label: 'Generate Python Dockerfile'
-  };
-  const GolangCommand: Command = {
-    id: 'golang-command',
-    label: 'Generate Go Dockerfile'
-  };
-@injectable()
-export class SampleCommandContribution implements CommandContribution {
+  @inject(MessageService)
+  protected readonly messageService: MessageService;
 
-    @inject(QuickInputService)
-    protected readonly quickInputService: QuickInputService;
-
-    @inject(MessageService)
-    protected readonly messageService: MessageService;
-
-    registerCommands(commands: CommandRegistry): void {
-        commands.registerCommand({ id: 'create-quick-pick-sample', label: 'Internal QuickPick' }, {
-            execute: () => {
-                const pick = this.quickInputService.createQuickPick();
-                pick.items = [{ label: '1' }, { label: '2' }, { label: '3' }];
-                pick.onDidAccept(() => {
-                    console.log(`accepted: ${pick.selectedItems[0]?.label}`);
-                    pick.hide();
-                });
-                pick.show();
-            }
+  registerCommands(commands: CommandRegistry): void {
+    commands.registerCommand({ id: 'create-quick-pick-sample', label: 'Internal QuickPick' }, {
+      execute: () => {
+        const pick = this.quickInputService.createQuickPick();
+        pick.items = [{ label: '1' }, { label: '2' }, { label: '3' }];
+        pick.onDidAccept(() => {
+          console.log(`accepted: ${pick.selectedItems[0]?.label}`);
+          pick.hide();
         });
+        pick.show();
+      }
+    });
 
-        // 사용자가 선택한 Golang 실행 커멘드 메뉴
+    // 사용자가 선택한 Golang 실행 커멘드 메뉴
     commands.registerCommand(RunGolangCommand, {
       execute: async () => {
         this.fileDialogService.showOpenDialog({
@@ -135,22 +135,22 @@ export class SampleCommandContribution implements CommandContribution {
         });
       }
     });
-        
-    }
+
+  }
 
 }
 
 @injectable()
 export class SampleMenuContribution implements MenuContribution {
-    registerMenus(menus: MenuModelRegistry): void {
-        setTimeout(() => {
-            const subMenuPath = [...MAIN_MENU_BAR, 'sample-menu'];
-            menus.registerSubmenu(subMenuPath, 'Sample Menu', {
-                order: '2' // that should put the menu right next to the File menu
-            });
-            
-        }, 10000);
-    }
+  registerMenus(menus: MenuModelRegistry): void {
+    setTimeout(() => {
+      const subMenuPath = [...MAIN_MENU_BAR, 'sample-menu'];
+      menus.registerSubmenu(subMenuPath, 'Sample Menu', {
+        order: '2' // that should put the menu right next to the File menu
+      });
+
+    }, 10000);
+  }
 
 }
 
@@ -159,19 +159,19 @@ export class SampleMenuContribution implements MenuContribution {
  */
 export class PlaceholderMenuNode implements MenuNode {
 
-    constructor(readonly id: string, public readonly label: string, protected options?: SubMenuOptions) { }
+  constructor(readonly id: string, public readonly label: string, protected options?: SubMenuOptions) { }
 
-    get icon(): string | undefined {
-        return this.options?.iconClass;
-    }
+  get icon(): string | undefined {
+    return this.options?.iconClass;
+  }
 
-    get sortString(): string {
-        return this.options?.order || this.label;
-    }
+  get sortString(): string {
+    return this.options?.order || this.label;
+  }
 
 }
 
 export const bindSampleMenu = (bind: interfaces.Bind) => {
-    bind(CommandContribution).to(SampleCommandContribution).inSingletonScope();
-    bind(MenuContribution).to(SampleMenuContribution).inSingletonScope();
+  bind(CommandContribution).to(SampleCommandContribution).inSingletonScope();
+  bind(MenuContribution).to(SampleMenuContribution).inSingletonScope();
 };
