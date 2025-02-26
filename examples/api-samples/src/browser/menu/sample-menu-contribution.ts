@@ -62,6 +62,7 @@ const GolangCommand: Command = {
   id: 'golang-command',
   label: 'Generate Go Dockerfile'
 };
+
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
@@ -84,12 +85,6 @@ export class SampleCommandContribution implements CommandContribution {
   @inject(TerminalService) protected readonly terminalService: TerminalService;
   @inject(FileDialogService) protected readonly fileDialogService: FileDialogService;
   @inject(RequestService) protected requestService: RequestService;
-
-  @inject(QuickInputService)
-  protected readonly quickInputService: QuickInputService;
-
-  @inject(MessageService)
-  protected readonly messageService: MessageService;
 
   registerCommands(commands: CommandRegistry): void {
     commands.registerCommand({ id: 'create-quick-pick-sample', label: 'Internal QuickPick' }, {
