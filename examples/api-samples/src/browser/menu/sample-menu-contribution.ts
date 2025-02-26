@@ -254,6 +254,12 @@ export class SampleCommandContribution implements CommandContribution {
         alert(rootUri);
 
         this.fileService.createFolder(new URI(rootUri + '/goProject'));
+        this.fileService.createFolder(new URI(rootUri + '/goProject'));
+        this.fileService.createFile(new URI(rootUri + '/goProject/Dockerfile'));
+        this.fileService.createFolder(new URI(rootUri + '/goProject/pkg'));
+        this.fileService.createFolder(new URI(rootUri + '/goProject/bin'));
+        this.fileService.createFolder(new URI(rootUri + '/goProject/src'));
+        this.fileService.createFile(new URI(rootUri + '/goProject/src/main.go'));
       }
     });
   }
