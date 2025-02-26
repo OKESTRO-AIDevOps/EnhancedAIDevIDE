@@ -45,6 +45,11 @@ const GenerateYAMLFileCommand: Command = {
   label: 'Generate YAML File'
 };
 
+const DockerMenuCommand: Command = {
+  id: 'docker-menu-command',
+  label: 'Docker Command'
+};
+
 // sub sub menu
 const JavaCommand: Command = {
     id: 'java-command',
