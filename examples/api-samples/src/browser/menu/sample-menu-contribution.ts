@@ -111,6 +111,12 @@ const DockerLogin: Command = {
   label: 'Docker Login'
 };
 
+const MLPipelineCreateRunFunc: Command = {
+  id: 'ml-pipeline-create-run-func',
+  label: 'ML Pipeline Create Run Func'
+};
+
+
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
