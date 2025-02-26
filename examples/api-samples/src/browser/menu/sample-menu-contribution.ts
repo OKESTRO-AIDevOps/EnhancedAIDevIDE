@@ -25,28 +25,37 @@ import { inject, injectable, interfaces } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { ReactNode } from '@theia/core/shared/react';
 
+const InitGolangProject: Command = {
+  id: 'init-golang-project',
+  label: 'Init Go Project'
+};
+
 const MakeCommand: Command = {
     id: 'make-command',
     label: 'Make Command'
   };
 
-  const InitProjectDirectory: Command = {
+const InitProjectDirectory: Command = {
     id: 'init-project-directory',
     label: 'Init Project directory'
   };
+
   // sub sub menu
-  const JavaCommand: Command = {
+const JavaCommand: Command = {
     id: 'java-command',
     label: 'Generate Java Dockerfile'
   };
-  const PythonCommand: Command = {
+
+const PythonCommand: Command = {
     id: 'python-command',
     label: 'Generate Python Dockerfile'
   };
-  const GolangCommand: Command = {
+
+const GolangCommand: Command = {
     id: 'golang-command',
     label: 'Generate Go Dockerfile'
   };
+
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
@@ -69,7 +78,7 @@ export class SampleCommandContribution implements CommandContribution {
             }
         });
 
-        // 사용자가 선택한 Golang 실행 커멘드 메뉴
+    // 사용자가 선택한 Golang 실행 커멘드 메뉴
     commands.registerCommand(RunGolangCommand, {
       execute: async () => {
         this.fileDialogService.showOpenDialog({
@@ -100,7 +109,53 @@ export class SampleCommandContribution implements CommandContribution {
         });
       }
     });
-        
+    // 사용자가 선택한 Python 실행 커멘드 메뉴
+    commands.registerCommand(RunPython3Command, {
+      execute: async () => {
+        await this.fileDialogService.showOpenDialog({
+          title: RunPython3Command.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+        }).then((selectUri: URI | undefined) => {
+          if (selectUri) {
+            const currentTerminal = this.terminalService.currentTerminal;
+            if (currentTerminal === undefined) {
+              alert('current terminal undefined!');
+              return;
+            } else {
+              const fileFullPath = selectUri.toString();
+              const filePathElement = selectUri.toString().split('/');
+              const filename = filePathElement[filePathElement.length - 1];
+              const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+              const runPythonCommandLine: CommandLineOptions = {
+                cwd: filePath,   // Command실행 경로
+                args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                env: {}
+              };
+              currentTerminal.executeCommand(runPythonCommandLine);
+            }
+            // const currentTerminal = this.terminalService.currentTerminal;
+            // if (currentTerminal === undefined) {
+            //   alert('current terminal undefined!');
+            //   return;
+            // } else {
+            //   const fileFullPath = selectUri.toString();
+            //   const filePathElement = selectUri.toString().split('/');
+            //   const filename = filePathElement[filePathElement.length - 1];
+            //   const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+            //   const runPythonCommandLine: CommandLineOptions = {
+            //     cwd: filePath,   // Command실행 경로
+            //     args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+            //     env: {}
+            //   };
+            //   currentTerminal.executeCommand(runPythonCommandLine);
+            // }
+          } else {
+            alert('Not Select file!');
+          }
+        });
+      }
+    });    
     }
 
 }
