@@ -102,6 +102,9 @@ export class SampleCommandContribution implements CommandContribution {
     });
         
     }
+    protected readJsonFile(fileUri: URI) {
+      return this.fileService.read(fileUri);
+    }
 
 }
 
