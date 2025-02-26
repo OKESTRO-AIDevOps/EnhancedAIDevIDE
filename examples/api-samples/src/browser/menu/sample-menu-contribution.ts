@@ -52,20 +52,20 @@ const runDockerImgCommand: Command = {
   id: 'run-docker-img-command',
   label: 'Run Docker Image Command'
 };
-  const InitProjectDirectory: Command = {
+const InitProjectDirectory: Command = {
     id: 'init-project-directory',
     label: 'Init Project directory'
   };
   // sub sub menu
-  const JavaCommand: Command = {
+const JavaCommand: Command = {
     id: 'java-command',
     label: 'Generate Java Dockerfile'
   };
-  const PythonCommand: Command = {
+const PythonCommand: Command = {
     id: 'python-command',
     label: 'Generate Python Dockerfile'
   };
-  const GolangCommand: Command = {
+const GolangCommand: Command = {
     id: 'golang-command',
     label: 'Generate Go Dockerfile'
   };
