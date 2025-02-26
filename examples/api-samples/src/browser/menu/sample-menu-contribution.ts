@@ -35,6 +35,11 @@ const DockerLogin: Command = {
   label: 'Docker Login'
 };
 
+const MLPipelineCreateRunFunc: Command = {
+  id: 'ml-pipeline-create-run-func',
+  label: 'ML Pipeline Create Run Func'
+};
+
 const MakeCommand: Command = {
     id: 'make-command',
     label: 'Make Command'
