@@ -25,6 +25,11 @@ import { inject, injectable, interfaces } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { ReactNode } from '@theia/core/shared/react';
 
+const RegistryPullImg: Command = {
+  id: 'pull-container-image',
+  label: 'Pull Container Image'
+};
+
 const MakeCommand: Command = {
     id: 'make-command',
     label: 'Make Command'
