@@ -177,23 +177,6 @@ export class SampleCommandContribution implements CommandContribution {
                   };
                   currentTerminal.executeCommand(runPythonCommandLine);
                 }
-                // const currentTerminal = this.terminalService.currentTerminal;
-                // if (currentTerminal === undefined) {
-                //   alert('current terminal undefined!');
-                //   return;
-                // } else {
-                //   const fileFullPath = selectUri.toString();
-                //   const filePathElement = selectUri.toString().split('/');
-                //   const filename = filePathElement[filePathElement.length - 1];
-                //   const filePath = fileFullPath.replace(filename, '').replace('file://', '');
-
-                //   const runPythonCommandLine: CommandLineOptions = {
-                //     cwd: filePath,   // Command실행 경로
-                //     args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-                //     env: {}
-                //   };
-                //   currentTerminal.executeCommand(runPythonCommandLine);
-                // }
               } else {
                 alert('Not Select file!');
               }
@@ -214,12 +197,12 @@ export class SampleCommandContribution implements CommandContribution {
                 } else {
                   const fileFullPath = selectUri.toString();
                   const filePathElement = selectUri.toString().split('/');
-                  const filename2 = filePathElement[filePathElement.length - 1];
-                  const filePath = fileFullPath.replace(filename2, '').replace('file://', '');
+                  const filename = filePathElement[filePathElement.length - 1];
+                  const filePath = fileFullPath.replace(filename, '').replace('file://', '');
 
                   const runPythonCommandLine: CommandLineOptions = {
                     cwd: filePath,   // Command실행 경로
-                    args: ['python3', filename2],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                    args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
                     env: {}
                   };
                   currentTerminal.executeCommand(runPythonCommandLine);
