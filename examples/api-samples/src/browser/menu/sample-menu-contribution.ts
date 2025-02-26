@@ -122,6 +122,39 @@ export class SampleCommandContribution implements CommandContribution {
         this.fileService.createFolder(new URI(rootUri + '/goProject/src'));
         this.fileService.createFile(new URI(rootUri + '/goProject/src/main.go'));
       }
+    });
+    // 사용자가 선택한 Java 실행 커멘드 메뉴
+    commands.registerCommand(RunJavaCommand, {
+      execute: () => {
+        this.fileDialogService.showOpenDialog({
+          title: RunJavaCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+        }).then((selectUri: URI | undefined) => {
+          if (selectUri) {
+            const currentTerminal = this.terminalService.currentTerminal;
+            // let filePath = selectUri.toString().replace('file://', '');
+            const fileFullPath = selectUri.toString();
+            const filePathElement = selectUri.toString().split('/');
+            // alert('>>>'+ filePath[-1]);
+            const filename = filePathElement[filePathElement.length - 1];
+            const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+            const runJavaCommandLine: CommandLineOptions = {
+              cwd: filePath,   // Command실행 경로
+              args: ['javac', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+              env: {}
+            };
+            currentTerminal.executeCommand(runJavaCommandLine);
+            const runJavaCommandLine2: CommandLineOptions = {
+              cwd: filePath,   // Command실행 경로
+              args: ['java', filename.replace('.java', '')],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+              env: {}
+            };
+            currentTerminal.executeCommand(runJavaCommandLine2);
+          } else {
+            alert('Not Select file!');
+          }
+        });
+      }
     });   
     }
 }
