@@ -2,7 +2,7 @@
 <div id="theia-logo" align="center">
     <br />
     <img src="https://raw.githubusercontent.com/eclipse-theia/theia/master/logo/theia-logo-gray.svg?sanitize=true" alt="Theia Logo" width="300"/>
-    <h3>Cloud & Desktop IDE Framework</h3>
+    <h3>Cloud & Dedfasktop IDE Framework</h3>
 </div>
 
 <div id="badges" align="center">

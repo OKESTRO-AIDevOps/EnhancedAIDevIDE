@@ -30,6 +30,7 @@ const InitGolangProject: Command = {
   label: 'Init Go Project'
 };
 
+
 const MakeCommand: Command = {
   id: 'make-command',
   label: 'Make Command'
@@ -38,6 +39,31 @@ const MakeCommand: Command = {
 const InitProjectDirectory: Command = {
   id: 'init-project-directory',
   label: 'Init Project directory'
+};
+
+const GenerateYAMLFileCommand: Command = {
+  id: 'generatre-yaml-file-command',
+  label: 'Generate YAML File'
+};
+
+const DockerMenuCommand: Command = {
+  id: 'docker-menu-command',
+  label: 'Docker Command'
+};
+
+const BuildDockerfileCommand: Command = {
+  id: 'build-dockerfile-command',
+  label: 'Build Dockerfile Command'
+};
+
+const runDockerImgCommand: Command = {
+  id: 'run-docker-img-command',
+  label: 'Run Docker Image Command'
+};
+
+const RegistryPushImg: Command = {
+  id: 'puah-container-image',
+  label: 'Push Container Image'
 };
 
 // sub sub menu
@@ -74,21 +100,7 @@ const RunPython3Command: Command = {
 const RunGolangCommand: Command = {
   id: 'run-Golang-command',
   label: 'Run Golang'
-};
-const RegistryPullImg: Command = {
-  id: 'pull-container-image',
-  label: 'Pull Container Image'
-};
-
-const DockerLogin: Command = {
-  id: 'docker-login',
-  label: 'Docker Login'
-};
-
-const MLPipelineCreateRunFunc: Command = {
-  id: 'ml-pipeline-create-run-func',
-  label: 'ML Pipeline Create Run Func'
-};
+}
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
@@ -121,107 +133,179 @@ export class SampleCommandContribution implements CommandContribution {
           console.log(`accepted: ${pick.selectedItems[0]?.label}`);
           pick.hide();
         });
-        pick.show();
-      }
-    });
-    // 사용자가 선택한 Python 실행 커멘드 메뉴
-    commands.registerCommand(RunPython3Command, {
-      execute: async () => {
-        await this.fileDialogService.showOpenDialog({
-          title: RunPython3Command.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
-        }).then((selectUri: URI | undefined) => {
-          if (selectUri) {
-            const currentTerminal = this.terminalService.currentTerminal;
-            if (currentTerminal === undefined) {
-              alert('current terminal undefined!');
-              return;
-            } else {
-              const fileFullPath = selectUri.toString();
-              const filePathElement = selectUri.toString().split('/');
-              const filename = filePathElement[filePathElement.length - 1];
-              const filePath = fileFullPath.replace(filename, '').replace('file://', '');
 
-              const runPythonCommandLine: CommandLineOptions = {
-                cwd: filePath,   // Command실행 경로
-                args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-                env: {}
-              };
-              currentTerminal.executeCommand(runPythonCommandLine);
-            }
-            // const currentTerminal = this.terminalService.currentTerminal;
-            // if (currentTerminal === undefined) {
-            //   alert('current terminal undefined!');
-            //   return;
-            // } else {
-            //   const fileFullPath = selectUri.toString();
-            //   const filePathElement = selectUri.toString().split('/');
-            //   const filename = filePathElement[filePathElement.length - 1];
-            //   const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+        // 사용자가 선택한 Golang 실행 커멘드 메뉴
+        commands.registerCommand(RunGolangCommand, {
+          execute: async () => {
+            await this.fileDialogService.showOpenDialog({
+              title: RunPython3Command.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+            }).then((selectUri: URI | undefined) => {
+              if (selectUri) {
+                const currentTerminal = this.terminalService.currentTerminal;
+                if (currentTerminal === undefined) {
+                  alert('current terminal undefined!');
+                  return;
+                } else {
+                  const fileFullPath = selectUri.toString();
+                  const filePathElement = selectUri.toString().split('/');
+                  const filename = filePathElement[filePathElement.length - 1];
+                  const filePath = fileFullPath.replace(filename, '').replace('file://', '');
 
-            //   const runPythonCommandLine: CommandLineOptions = {
-            //     cwd: filePath,   // Command실행 경로
-            //     args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-            //     env: {}
-            //   };
-            //   currentTerminal.executeCommand(runPythonCommandLine);
-            // }
-          } else {
-            alert('Not Select file!');
+                  const runPythonCommandLine: CommandLineOptions = {
+                    cwd: filePath,   // Command실행 경로
+                    args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                    env: {}
+                  };
+                  currentTerminal.executeCommand(runPythonCommandLine);
+                }
+                // const currentTerminal = this.terminalService.currentTerminal;
+                // if (currentTerminal === undefined) {
+                //   alert('current terminal undefined!');
+                //   return;
+                // } else {
+                //   const fileFullPath = selectUri.toString();
+                //   const filePathElement = selectUri.toString().split('/');
+                //   const filename = filePathElement[filePathElement.length - 1];
+                //   const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+                //   const runPythonCommandLine: CommandLineOptions = {
+                //     cwd: filePath,   // Command실행 경로
+                //     args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                //     env: {}
+                //   };
+                //   currentTerminal.executeCommand(runPythonCommandLine);
+                // }
+              } else {
+                alert('Not Select file!');
+              }
+            });
+          }
+        })
+        // 사용자가 선택한 Python 실행 커멘드 메뉴
+        commands.registerCommand(RunPython3Command, {
+          execute: async () => {
+            await this.fileDialogService.showOpenDialog({
+              title: RunPython3Command.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+            }).then((selectUri: URI | undefined) => {
+              if (selectUri) {
+                const currentTerminal = this.terminalService.currentTerminal;
+                if (currentTerminal === undefined) {
+                  alert('current terminal undefined!');
+                  return;
+                } else {
+                  const fileFullPath = selectUri.toString();
+                  const filePathElement = selectUri.toString().split('/');
+                  const filename = filePathElement[filePathElement.length - 1];
+                  const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+                  const runPythonCommandLine: CommandLineOptions = {
+                    cwd: filePath,   // Command실행 경로
+                    args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                    env: {}
+                  };
+                  currentTerminal.executeCommand(runPythonCommandLine);
+                }
+                // const currentTerminal = this.terminalService.currentTerminal;
+                // if (currentTerminal === undefined) {
+                //   alert('current terminal undefined!');
+                //   return;
+                // } else {
+                //   const fileFullPath = selectUri.toString();
+                //   const filePathElement = selectUri.toString().split('/');
+                //   const filename = filePathElement[filePathElement.length - 1];
+                //   const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+                //   const runPythonCommandLine: CommandLineOptions = {
+                //     cwd: filePath,   // Command실행 경로
+                //     args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                //     env: {}
+                //   };
+                //   currentTerminal.executeCommand(runPythonCommandLine);
+                // }
+              } else {
+                alert('Not Select file!');
+              }
+            });
           }
         });
       }
+    protected readJsonFile(fileUri: URI) {
+        return this.fileService.read(fileUri);
+      }
     });
-  }
-  protected readJsonFile(fileUri: URI) {
-    return this.fileService.read(fileUri);
-  }
-    // 사용자가 선택한 Golang 실행 커멘드 메뉴
-    commands.registerCommand(RunGolangCommand, {
-    execute: async () => {
-      this.fileDialogService.showOpenDialog({
-        title: RunGolangCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
-      }).then((selectUri: URI | undefined) => {
-        if (selectUri) {
-          const currentTerminal = this.terminalService.currentTerminal;
 
-          if (currentTerminal === undefined) {
-            alert('current terminal undefined!');
-            return;
-          } else {
-            const fileFullPath = selectUri.toString();
-            const filePathElement = selectUri.toString().split('/');
-            const filename = filePathElement[filePathElement.length - 1];
-            const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+  }
 
-            const runGolangCommandLine: CommandLineOptions = {
-              cwd: filePath,   // Command실행 경로
-              args: ['go', 'run', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-              env: {}
-            };
-            currentTerminal.executeCommand(runGolangCommandLine);
-          }
-        } else {
-          alert('Not Select file!');
+  // eslint-disable-next-line @typescript-eslint/tslint/config
+  protected async createRunAPI(yamlStr: string, checkpointStr: boolean, nameStr: string, descriptionStr: string) {
+    const bodyData = JSON.stringify({
+      // name: value01,
+      // describe: value02,
+      // base64: btoa(value03)
+      yaml: btoa(yamlStr),
+      metadata: {
+        checkpoint: checkpointStr,
+        name: nameStr,
+        description: descriptionStr
+      }
+    });
+
+    console.log('Translate result: ' + JSON.stringify(bodyData));
+
+    await fetch('http://hybrid.strato.co.kr:30121/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: bodyData
+    }).then(response => {
+      console.log('ok?: ', response.ok);
+      if (!response.ok) {
+        console.log('HTTP error', response.status);
+        alert('The ML Workload Run Has Failed!');
+      } else {
+        console.log('HTTP Result: ', response.status, ' _ ', response.statusText);
+        alert('ML Workload Has Run Successfully!');
+      }
+    });
+
+    registerCommands(commands: CommandRegistry): void {
+      commands.registerCommand({ id: 'create-quick-pick-sample', label: 'Internal QuickPick' }, {
+        execute: () => {
+          const pick = this.quickInputService.createQuickPick();
+          pick.items = [{ label: '1' }, { label: '2' }, { label: '3' }];
+          pick.onDidAccept(() => {
+            console.log(`accepted: ${pick.selectedItems[0]?.label}`);
+            pick.hide();
+          });
+          pick.show();
+        }
+      });
+
+      //----------------------- Java를 실행을 위한 도커파일 예제 생성 메뉴
+      commands.registerCommand(JavaCommand, {
+        execute: () => {
+          const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+          const rootUri = firstRootUri.toString().replace('file://', '');
+          this.fileService.createFileKetiJava(new URI(rootUri + '/Dockerfile'));
         }
       });
     }
-    });
-
   }
 
-}
-
-@injectable()
-export class SampleMenuContribution implements MenuContribution {
+  @injectable()
+  export class SampleMenuContribution implements MenuContribution {
   registerMenus(menus: MenuModelRegistry): void {
     setTimeout(() => {
-      const subMenuPath = [...MAIN_MENU_BAR, 'sample-menu'];
-      menus.registerSubmenu(subMenuPath, 'Sample Menu', {
-        order: '2' // that should put the menu right next to the File menu
-      });
+    const subMenuPath = [...MAIN_MENU_BAR, 'sample-menu'];
+    menus.registerSubmenu(subMenuPath, 'Sample Menu', {
+      order: '2' // that should put the menu right next to the File menu
+    });
 
-    }, 10000);
-  }
+  }, 10000);
+}
 
 }
 
