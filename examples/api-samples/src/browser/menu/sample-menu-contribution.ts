@@ -71,6 +71,12 @@ const RunPython3Command: Command = {
   label: 'Run Python3'
 };
 
+const RunGolangCommand: Command = {
+  id: 'run-Golang-command',
+  label: 'Run Golang'
+};
+
+
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
