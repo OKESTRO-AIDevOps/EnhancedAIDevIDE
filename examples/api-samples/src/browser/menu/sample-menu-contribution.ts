@@ -66,6 +66,11 @@ const RunJavaCommand: Command = {
   label: 'Run Java'
 };
 
+const RunPython3Command: Command = {
+  id: 'run-python3-command',
+  label: 'Run Python3'
+};
+
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
