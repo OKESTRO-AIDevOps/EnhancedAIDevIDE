@@ -39,7 +39,14 @@ const MakeCommand: Command = {
     id: 'java-command',
     label: 'Generate Java Dockerfile'
   };
-
+  const PythonCommand: Command = {
+    id: 'python-command',
+    label: 'Generate Python Dockerfile'
+  };
+  const GolangCommand: Command = {
+    id: 'golang-command',
+    label: 'Generate Go Dockerfile'
+  };
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
