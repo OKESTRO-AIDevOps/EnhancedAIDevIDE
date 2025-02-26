@@ -101,6 +101,12 @@ const RunGolangCommand: Command = {
   id: 'run-Golang-command',
   label: 'Run Golang'
 }
+
+const RegistryPullImg: Command = {
+  id: 'pull-container-image',
+  label: 'Pull Container Image'
+};
+
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
