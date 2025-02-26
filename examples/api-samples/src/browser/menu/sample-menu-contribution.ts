@@ -34,6 +34,10 @@ const GenerateYAMLFileCommand: Command = {
   label: 'Generate YAML File'
 };
 
+const DockerMenuCommand: Command = {
+  id: 'docker-menu-command',
+  label: 'Docker Command'
+};
   const InitProjectDirectory: Command = {
     id: 'init-project-directory',
     label: 'Init Project directory'
