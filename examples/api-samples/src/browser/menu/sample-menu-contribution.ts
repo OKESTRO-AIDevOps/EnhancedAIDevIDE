@@ -139,6 +139,9 @@ export class SampleCommandContribution implements CommandContribution {
   @inject(TerminalService) protected readonly terminalService: TerminalService;
   @inject(FileDialogService) protected readonly fileDialogService: FileDialogService;
   @inject(RequestService) protected requestService: RequestService;
+  @inject(FileDialogService) protected readonly fileDialogService2: FileDialogService;
+  @inject(RequestService) protected requestService2: RequestService;
+
 
   registerCommands(commands: CommandRegistry): void {
     commands.registerCommand({ id: 'create-quick-pick-sample', label: 'Internal QuickPick' }, {
