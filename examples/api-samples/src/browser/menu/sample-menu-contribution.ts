@@ -40,6 +40,22 @@ const MLPipelineCreateRunFunc: Command = {
   label: 'ML Pipeline Create Run Func'
 };
 
+//export class SampleCommandContribution implements CommandContribution 내부에 위쪽
+@inject(QuickInputService)
+  protected readonly quickInputService: QuickInputService;
+
+  @inject(MessageService)
+  protected readonly messageService: MessageService;
+ @inject(WorkspaceService) protected readonly workspaceService: WorkspaceService;
+
+  @inject(MonacoEditorProvider) protected readonly monacoEditorProvider: MonacoEditorProvider;
+
+  @inject(FileService) protected readonly fileService: FileService;
+
+  @inject(WindowService)
+  protected readonly windowService: WindowService;
+  protected doOpenExternalLink = (url: string) => this.windowService.openNewWindow(url, { external: true });
+
 const MakeCommand: Command = {
     id: 'make-command',
     label: 'Make Command'
