@@ -25,6 +25,56 @@ import { inject, injectable, interfaces } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { ReactNode } from '@theia/core/shared/react';
 
+const InitGolangProject: Command = {
+  id: 'init-golang-project',
+  label: 'Init Go Project'
+};
+
+const MakeCommand: Command = {
+  id: 'make-command',
+  label: 'Make Command'
+};
+
+const InitProjectDirectory: Command = {
+  id: 'init-project-directory',
+  label: 'Init Project directory'
+};
+
+// sub sub menu
+const JavaCommand: Command = {
+  id: 'java-command',
+  label: 'Generate Java Dockerfile'
+};
+
+const PythonCommand: Command = {
+  id: 'python-command',
+  label: 'Generate Python Dockerfile'
+};
+
+const GolangCommand: Command = {
+  id: 'golang-command',
+  label: 'Generate Go Dockerfile'
+};
+
+const RunCommand: Command = {
+  id: 'run-command',
+  label: 'Run Command Menu'
+};
+
+const RunJavaCommand: Command = {
+  id: 'run-java-command',
+  label: 'Run Java'
+};
+
+const RunPython3Command: Command = {
+  id: 'run-python3-command',
+  label: 'Run Python3'
+};
+
+const RunGolangCommand: Command = {
+  id: 'run-Golang-command',
+  label: 'Run Golang'
+};
 const RegistryPullImg: Command = {
   id: 'pull-container-image',
   label: 'Pull Container Image'
@@ -39,30 +89,6 @@ const MLPipelineCreateRunFunc: Command = {
   id: 'ml-pipeline-create-run-func',
   label: 'ML Pipeline Create Run Func'
 };
-
-const MakeCommand: Command = {
-  id: 'make-command',
-  label: 'Make Command'
-};
-
-const InitProjectDirectory: Command = {
-  id: 'init-project-directory',
-  label: 'Init Project directory'
-};
-// sub sub menu
-const JavaCommand: Command = {
-  id: 'java-command',
-  label: 'Generate Java Dockerfile'
-};
-const PythonCommand: Command = {
-  id: 'python-command',
-  label: 'Generate Python Dockerfile'
-};
-const GolangCommand: Command = {
-  id: 'golang-command',
-  label: 'Generate Go Dockerfile'
-};
-
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
@@ -98,16 +124,14 @@ export class SampleCommandContribution implements CommandContribution {
         pick.show();
       }
     });
-
-    // 사용자가 선택한 Golang 실행 커멘드 메뉴
-    commands.registerCommand(RunGolangCommand, {
+    // 사용자가 선택한 Python 실행 커멘드 메뉴
+    commands.registerCommand(RunPython3Command, {
       execute: async () => {
-        this.fileDialogService.showOpenDialog({
-          title: RunGolangCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+        await this.fileDialogService.showOpenDialog({
+          title: RunPython3Command.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
         }).then((selectUri: URI | undefined) => {
           if (selectUri) {
             const currentTerminal = this.terminalService.currentTerminal;
-
             if (currentTerminal === undefined) {
               alert('current terminal undefined!');
               return;
@@ -117,18 +141,70 @@ export class SampleCommandContribution implements CommandContribution {
               const filename = filePathElement[filePathElement.length - 1];
               const filePath = fileFullPath.replace(filename, '').replace('file://', '');
 
-              const runGolangCommandLine: CommandLineOptions = {
+              const runPythonCommandLine: CommandLineOptions = {
                 cwd: filePath,   // Command실행 경로
-                args: ['go', 'run', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
                 env: {}
               };
-              currentTerminal.executeCommand(runGolangCommandLine);
+              currentTerminal.executeCommand(runPythonCommandLine);
             }
+            // const currentTerminal = this.terminalService.currentTerminal;
+            // if (currentTerminal === undefined) {
+            //   alert('current terminal undefined!');
+            //   return;
+            // } else {
+            //   const fileFullPath = selectUri.toString();
+            //   const filePathElement = selectUri.toString().split('/');
+            //   const filename = filePathElement[filePathElement.length - 1];
+            //   const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+            //   const runPythonCommandLine: CommandLineOptions = {
+            //     cwd: filePath,   // Command실행 경로
+            //     args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+            //     env: {}
+            //   };
+            //   currentTerminal.executeCommand(runPythonCommandLine);
+            // }
           } else {
             alert('Not Select file!');
           }
         });
       }
+    });
+  }
+  protected readJsonFile(fileUri: URI) {
+    return this.fileService.read(fileUri);
+  }
+    // 사용자가 선택한 Golang 실행 커멘드 메뉴
+    commands.registerCommand(RunGolangCommand, {
+    execute: async () => {
+      this.fileDialogService.showOpenDialog({
+        title: RunGolangCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+      }).then((selectUri: URI | undefined) => {
+        if (selectUri) {
+          const currentTerminal = this.terminalService.currentTerminal;
+
+          if (currentTerminal === undefined) {
+            alert('current terminal undefined!');
+            return;
+          } else {
+            const fileFullPath = selectUri.toString();
+            const filePathElement = selectUri.toString().split('/');
+            const filename = filePathElement[filePathElement.length - 1];
+            const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+            const runGolangCommandLine: CommandLineOptions = {
+              cwd: filePath,   // Command실행 경로
+              args: ['go', 'run', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+              env: {}
+            };
+            currentTerminal.executeCommand(runGolangCommandLine);
+          }
+        } else {
+          alert('Not Select file!');
+        }
+      });
+    }
     });
 
   }
