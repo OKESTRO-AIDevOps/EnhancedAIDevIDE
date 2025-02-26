@@ -140,7 +140,24 @@ export class SampleCommandContribution implements CommandContribution {
         alert('ML Workload Has Run Successfully!');
       }
     });
+
+    registerCommands(commands: CommandRegistry): void {
+      commands.registerCommand({ id: 'create-quick-pick-sample', label: 'Internal QuickPick' }, {
+        execute: () => {
+          const pick = this.quickInputService.createQuickPick();
+          pick.items = [{ label: '1' }, { label: '2' }, { label: '3' }];
+          pick.onDidAccept(() => {
+            console.log(`accepted: ${pick.selectedItems[0]?.label}`);
+            pick.hide();
+          });
+          pick.show();
+        }
+      });
+  
+      
   }
+
+  
 
 }
 
