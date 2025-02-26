@@ -178,7 +178,67 @@ export class SampleCommandContribution implements CommandContribution {
       }
     });    
     }
+    protected readJsonFile(fileUri: URI) {
+      return this.fileService.read(fileUri);
+    }
 
+    // eslint-disable-next-line @typescript-eslint/tslint/config
+    protected async createRunAPI(yamlStr: string, checkpointStr: boolean, nameStr: string, descriptionStr: string) {
+    const bodyData = JSON.stringify({
+      // name: value01,
+      // describe: value02,
+      // base64: btoa(value03)
+      yaml: btoa(yamlStr),
+      metadata: {
+        checkpoint: checkpointStr,
+        name: nameStr,
+        description: descriptionStr
+      }
+    });
+
+    console.log('Translate result: ' + JSON.stringify(bodyData));
+
+    await fetch('http://hybrid.strato.co.kr:30121/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: bodyData
+    }).then(response => {
+      console.log('ok?: ', response.ok);
+      if (!response.ok) {
+        console.log('HTTP error', response.status);
+        alert('The ML Workload Run Has Failed!');
+      } else {
+        console.log('HTTP Result: ', response.status, ' _ ', response.statusText);
+        alert('ML Workload Has Run Successfully!');
+      }
+    });
+
+    registerCommands(commands: CommandRegistry): void {
+      commands.registerCommand({ id: 'create-quick-pick-sample', label: 'Internal QuickPick' }, {
+        execute: () => {
+          const pick = this.quickInputService.createQuickPick();
+          pick.items = [{ label: '1' }, { label: '2' }, { label: '3' }];
+          pick.onDidAccept(() => {
+            console.log(`accepted: ${pick.selectedItems[0]?.label}`);
+            pick.hide();
+          });
+          pick.show();
+        }
+      });
+  
+      //----------------------- Java를 실행을 위한 도커파일 예제 생성 메뉴
+      commands.registerCommand(JavaCommand, {
+        execute: () => {
+          const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+          const rootUri = firstRootUri.toString().replace('file://', '');
+          this.fileService.createFileKetiJava(new URI(rootUri + '/Dockerfile'));
+        }
+      });
+  }
 }
 
 @injectable()
