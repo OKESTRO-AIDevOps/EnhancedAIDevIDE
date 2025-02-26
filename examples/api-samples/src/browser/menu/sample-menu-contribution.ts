@@ -60,6 +60,11 @@ const runDockerImgCommand: Command = {
   label: 'Run Docker Image Command'
 };
 
+const RegistryPushImg: Command = {
+  id: 'puah-container-image',
+  label: 'Push Container Image'
+};
+
 // sub sub menu
 const JavaCommand: Command = {
     id: 'java-command',
