@@ -29,6 +29,10 @@ const MakeCommand: Command = {
     id: 'make-command',
     label: 'Make Command'
   };
+const GenerateYAMLFileCommand: Command = {
+  id: 'generatre-yaml-file-command',
+  label: 'Generate YAML File'
+};
 
   const InitProjectDirectory: Command = {
     id: 'init-project-directory',
