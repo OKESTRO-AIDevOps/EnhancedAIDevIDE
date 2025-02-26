@@ -40,6 +40,11 @@ const InitProjectDirectory: Command = {
     label: 'Init Project directory'
   };
 
+const GenerateYAMLFileCommand: Command = {
+  id: 'generatre-yaml-file-command',
+  label: 'Generate YAML File'
+};
+
 // sub sub menu
 const JavaCommand: Command = {
     id: 'java-command',
