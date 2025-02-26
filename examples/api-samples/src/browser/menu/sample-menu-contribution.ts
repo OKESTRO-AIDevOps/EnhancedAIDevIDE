@@ -50,6 +50,11 @@ const DockerMenuCommand: Command = {
   label: 'Docker Command'
 };
 
+const BuildDockerfileCommand: Command = {
+  id: 'build-dockerfile-command',
+  label: 'Build Dockerfile Command'
+};
+
 // sub sub menu
 const JavaCommand: Command = {
     id: 'java-command',
