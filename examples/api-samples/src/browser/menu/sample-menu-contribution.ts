@@ -40,12 +40,7 @@ const InitProjectDirectory: Command = {
     label: 'Init Project directory'
   };
 
-const RunCommand: Command = {
-  id: 'run-command',
-  label: 'Run Command Menu'
-};
-
-  // sub sub menu
+// sub sub menu
 const JavaCommand: Command = {
     id: 'java-command',
     label: 'Generate Java Dockerfile'
@@ -60,6 +55,16 @@ const GolangCommand: Command = {
     id: 'golang-command',
     label: 'Generate Go Dockerfile'
   };
+
+const RunCommand: Command = {
+  id: 'run-command',
+  label: 'Run Command Menu'
+};
+
+const RunJavaCommand: Command = {
+  id: 'run-java-command',
+  label: 'Run Java'
+};
 
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
