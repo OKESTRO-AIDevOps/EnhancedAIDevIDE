@@ -238,6 +238,14 @@ export class SampleCommandContribution implements CommandContribution {
           this.fileService.createFileKetiJava(new URI(rootUri + '/Dockerfile'));
         }
       });
+	// Golang 실행을 위한 도커파일 예제 생성 메뉴
+    commands.registerCommand(GolangCommand, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        this.fileService.createFileKetiGolang(new URI(rootUri + '/Dockerfile'));
+      }
+    });
   }
 }
 
