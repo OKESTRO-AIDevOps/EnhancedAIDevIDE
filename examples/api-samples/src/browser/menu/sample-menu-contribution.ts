@@ -48,7 +48,10 @@ const RegistryPushImg: Command = {
   id: 'puah-container-image',
   label: 'Push Container Image'
 };
-
+const runDockerImgCommand: Command = {
+  id: 'run-docker-img-command',
+  label: 'Run Docker Image Command'
+};
   const InitProjectDirectory: Command = {
     id: 'init-project-directory',
     label: 'Init Project directory'
