@@ -40,6 +40,11 @@ const InitProjectDirectory: Command = {
     label: 'Init Project directory'
   };
 
+const RunCommand: Command = {
+  id: 'run-command',
+  label: 'Run Command Menu'
+};
+
   // sub sub menu
 const JavaCommand: Command = {
     id: 'java-command',
