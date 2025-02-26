@@ -38,6 +38,11 @@ const DockerMenuCommand: Command = {
   id: 'docker-menu-command',
   label: 'Docker Command'
 };
+
+const BuildDockerfileCommand: Command = {
+  id: 'build-dockerfile-command',
+  label: 'Build Dockerfile Command'
+};
   const InitProjectDirectory: Command = {
     id: 'init-project-directory',
     label: 'Init Project directory'
