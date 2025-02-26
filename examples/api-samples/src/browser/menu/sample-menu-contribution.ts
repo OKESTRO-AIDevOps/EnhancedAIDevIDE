@@ -30,6 +30,16 @@ const MakeCommand: Command = {
     label: 'Make Command'
   };
 
+  const InitProjectDirectory: Command = {
+    id: 'init-project-directory',
+    label: 'Init Project directory'
+  };
+  // sub sub menu
+  const JavaCommand: Command = {
+    id: 'java-command',
+    label: 'Generate Java Dockerfile'
+  };
+
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
 
