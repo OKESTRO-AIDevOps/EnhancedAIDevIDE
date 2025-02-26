@@ -106,6 +106,10 @@ const RegistryPullImg: Command = {
   id: 'pull-container-image',
   label: 'Pull Container Image'
 };
+const DockerLogin: Command = {
+  id: 'docker-login',
+  label: 'Docker Login'
+};
 
 @injectable()
 export class SampleCommandContribution implements CommandContribution {
