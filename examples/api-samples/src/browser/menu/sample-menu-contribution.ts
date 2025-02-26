@@ -30,6 +30,11 @@ const RegistryPullImg: Command = {
   label: 'Pull Container Image'
 };
 
+const DockerLogin: Command = {
+  id: 'docker-login',
+  label: 'Docker Login'
+};
+
 const MakeCommand: Command = {
     id: 'make-command',
     label: 'Make Command'
