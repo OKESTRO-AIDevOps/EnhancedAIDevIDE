@@ -40,6 +40,31 @@ const InitProjectDirectory: Command = {
     label: 'Init Project directory'
   };
 
+const GenerateYAMLFileCommand: Command = {
+  id: 'generatre-yaml-file-command',
+  label: 'Generate YAML File'
+};
+
+const DockerMenuCommand: Command = {
+  id: 'docker-menu-command',
+  label: 'Docker Command'
+};
+
+const BuildDockerfileCommand: Command = {
+  id: 'build-dockerfile-command',
+  label: 'Build Dockerfile Command'
+};
+
+const runDockerImgCommand: Command = {
+  id: 'run-docker-img-command',
+  label: 'Run Docker Image Command'
+};
+
+const RegistryPushImg: Command = {
+  id: 'puah-container-image',
+  label: 'Push Container Image'
+};
+
 // sub sub menu
 const JavaCommand: Command = {
     id: 'java-command',
