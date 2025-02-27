@@ -25,6 +25,22 @@ import { inject, injectable, interfaces } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { ReactNode } from '@theia/core/shared/react';
 
+export interface Pipeline {
+  duration: string;
+  name: string;
+  status: string;
+}
+
+export interface DidCreateNewResourceEvent {
+  uri: URI
+  parent: URI
+}
+export const DEFAULT_HTTP_OPTIONS = {
+  method: 'POST',
+  headers: {
+    Accept: 'application/octet-stream'
+  },
+};
 const InitGolangProject: Command = {
   id: 'init-golang-project',
   label: 'Init Go Project'
@@ -183,6 +199,23 @@ export class SampleCommandContribution implements CommandContribution {
             });
           }
         })
+
+// Python 실행을 위한 도커파일 예제 생성 메뉴
+    commands.registerCommand(PythonCommand, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        this.fileService.createFileKetiPython(new URI(rootUri + '/Dockerfile'));
+      }
+    });
+    // Pipeline 관련 Yaml 스켈레톤 코드 생성 메뉴
+    commands.registerCommand(GenerateYAMLFileCommand, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        this.fileService.createFileKetiPythonSkeleton(new URI(rootUri + '/generateYAMLScript.py'));
+      }
+    });
         // 사용자가 선택한 Python 실행 커멘드 메뉴
         commands.registerCommand(RunPython3Command, {
           execute: async () => {
