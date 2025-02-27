@@ -588,6 +588,42 @@ export class SampleCommandContribution implements CommandContribution {
     });
 
   }, 10000);
+
+  menus.registerMenuAction(subSubMenuPath1, {
+    commandId: GolangCommand.id,
+    order: '3'
+  });
+  menus.registerMenuAction(subSubMenuPath5, {
+    commandId: InitGolangProject.id,
+    order: '1'
+  });
+
+  menus.registerMenuAction(subSubMenuPath6, {
+    commandId: RunJavaCommand.id,
+    order: '1'
+  });
+  menus.registerMenuAction(subSubMenuPath6, {
+    commandId: RunPython3Command.id,
+    order: '2'
+  });
+  menus.registerMenuAction(subSubMenuPath6, {
+    commandId: RunGolangCommand.id,
+    order: '3'
+  });
+
+  menus.registerMenuAction(subSubMenuPathDockerCommand, {
+    commandId: BuildDockerfileCommand.id,
+    order: '1'
+  });
+  menus.registerMenuAction(subSubMenuPathDockerCommand, {
+    commandId: runDockerImgCommand.id,
+    order: '2'
+  });
+  menus.registerMenuAction(subSubMenuPathDockerCommand, {
+    commandId: RegistryPushImg.id,
+    order: '3'
+  });
+
 }
 
 }
