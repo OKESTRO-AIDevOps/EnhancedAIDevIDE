@@ -637,7 +637,37 @@ export class SampleCommandContribution implements CommandContribution {
     });
 
   }, 10000);
-
+  menus.registerSubmenu(subMenuPath, 'Sample Menu', {
+    order: '2' // that should put the menu right next to the File menu
+  });
+  menus.registerMenuAction(subMenuPath, {
+    commandId: MakeCommand.id,
+    order: '0'
+  });
+  menus.registerMenuAction(subMenuPath, {
+    commandId: InitProjectDirectory.id,
+    order: '1'
+  });
+  menus.registerMenuAction(subMenuPath, {
+    commandId: RunCommand.id,
+    order: '2'
+  });
+  menus.registerMenuAction(subMenuPath, {
+    commandId: GenerateYAMLFileCommand.id,
+    order: '3'
+  });
+  menus.registerMenuAction(subMenuPath, {
+    commandId: DockerMenuCommand.id,
+    order: '4'
+  });
+  menus.registerMenuAction(subSubMenuPathDockerCommand, {
+    commandId: RegistryPullImg.id,
+    order: '4'
+  });
+  menus.registerMenuAction(subSubMenuPathDockerCommand, {
+    commandId: DockerLogin.id,
+    order: '5'
+  });
   menus.registerMenuAction(subSubMenuPath1, {
     commandId: GolangCommand.id,
     order: '3'
