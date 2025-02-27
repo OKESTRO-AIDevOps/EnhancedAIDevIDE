@@ -384,6 +384,16 @@ export class SampleCommandContribution implements CommandContribution {
           }
         }
       });
+  
+      menus.registerMenuAction(subMenuPath, {
+        commandId: MLPipelineCreateRunFunc.id,
+        order: '8'
+      });
+  
+      const subSubMenuPath1 = [...subMenuPath, 'make-sub-menu'];
+      const subSubMenuPath5 = [...subMenuPath, 'init-project-directory-menu'];
+      const subSubMenuPath6 = [...subMenuPath, 'run-command-menu'];
+      const subSubMenuPathDockerCommand = [...subMenuPath, 'docker-command-menu'];
     }
   }
 
