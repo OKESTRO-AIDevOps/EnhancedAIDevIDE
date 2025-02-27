@@ -131,76 +131,107 @@ export class SampleCommandContribution implements CommandContribution {
       }
     });
     // 사용자가 선택한 Python 실행 커멘드 메뉴
-    commands.registerCommand(RunPython3Command, {
-      execute: async () => {
-        await this.fileDialogService.showOpenDialog({
-          title: RunPython3Command.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
-        }).then((selectUri: URI | undefined) => {
-          if (selectUri) {
-            const currentTerminal = this.terminalService.currentTerminal;
-            if (currentTerminal === undefined) {
-              alert('current terminal undefined!');
-              return;
+      commands.registerCommand(RunPython3Command, {
+        execute: async () => {
+          await this.fileDialogService.showOpenDialog({
+            title: RunPython3Command.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+          }).then((selectUri: URI | undefined) => {
+            if (selectUri) {
+              const currentTerminal = this.terminalService.currentTerminal;
+              if (currentTerminal === undefined) {
+                alert('current terminal undefined!');
+                return;
+              } else {
+                const fileFullPath = selectUri.toString();
+                const filePathElement = selectUri.toString().split('/');
+                const filename = filePathElement[filePathElement.length - 1];
+                const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+                const runPythonCommandLine: CommandLineOptions = {
+                  cwd: filePath,   // Command실행 경로
+                  args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                  env: {}
+                };
+                currentTerminal.executeCommand(runPythonCommandLine);
+              }
             } else {
-              const fileFullPath = selectUri.toString();
-              const filePathElement = selectUri.toString().split('/');
-              const filename = filePathElement[filePathElement.length - 1];
-              const filePath = fileFullPath.replace(filename, '').replace('file://', '');
-
-              const runPythonCommandLine: CommandLineOptions = {
-                cwd: filePath,   // Command실행 경로
-                args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-                env: {}
-              };
-              currentTerminal.executeCommand(runPythonCommandLine);
+              alert('Not Select file!');
             }
-          } else {
-            alert('Not Select file!');
-          }
-        });
-      }
-    }
-    commands.registerCommand(BuildDockerfileCommand, {
-      execute: async () => {
-        const result = await this.quickInputService.input({
-          placeHolder: 'Please input the Docker Image name:Image tag!'
-        });
+          });
+        }
+      });
+      commands.registerCommand(BuildDockerfileCommand, {
+        execute: async () => {
+          const result = await this.quickInputService.input({
+            placeHolder: 'Please input the Docker Image name:Image tag!'
+          });
 
-        this.fileDialogService.showOpenDialog({
-          title: BuildDockerfileCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
-        }).then((selectUri: URI | undefined) => {
-          if (selectUri && result) {
-            const currentTerminal = this.terminalService.currentTerminal;
+          this.fileDialogService.showOpenDialog({
+            title: BuildDockerfileCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+          }).then((selectUri: URI | undefined) => {
+            if (selectUri && result) {
+              const currentTerminal = this.terminalService.currentTerminal;
 
-            if (currentTerminal === undefined) {
-              alert('current terminal undefined!');
-              return;
+              if (currentTerminal === undefined) {
+                alert('current terminal undefined!');
+                return;
+              } else {
+                const fileFullPath = selectUri.toString();
+                const filePathElement = selectUri.toString().split('/');
+                const filename = filePathElement[filePathElement.length - 1];
+                const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+                const buildDockerfileToDockerImage: CommandLineOptions = {
+                  cwd: filePath,   // Command실행 경로
+                  args: ['docker', 'build', '-t', result, '-f', 'Dockerfile', '.'],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                  env: {}
+                };
+                currentTerminal.executeCommand(buildDockerfileToDockerImage);
+
+                const printDockerImage: CommandLineOptions = {
+                  cwd: filePath,
+                  args: ['docker', 'images'],
+                  env: {}
+                };
+                currentTerminal.executeCommand(printDockerImage);
+              }
             } else {
-              const fileFullPath = selectUri.toString();
-              const filePathElement = selectUri.toString().split('/');
-              const filename = filePathElement[filePathElement.length - 1];
-              const filePath = fileFullPath.replace(filename, '').replace('file://', '');
-
-              const buildDockerfileToDockerImage: CommandLineOptions = {
-                cwd: filePath,   // Command실행 경로
-                args: ['docker', 'build', '-t', result, '-f', 'Dockerfile', '.'],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-                env: {}
-              };
-              currentTerminal.executeCommand(buildDockerfileToDockerImage);
-
-              const printDockerImage: CommandLineOptions = {
-                cwd: filePath,
-                args: ['docker', 'images'],
-                env: {}
-              };
-              currentTerminal.executeCommand(printDockerImage);
+              alert('Not Select file!');
             }
+          });
+        }
+      });
+      commands.registerCommand(runDockerImgCommand, {
+        execute: async () => {
+          const result = await this.quickInputService.input({
+            placeHolder: 'Please input the Docker Image run command! ex. docker run -it -v "$(pwd):/home/test" -p 80:80 exImg:1.0.0 '
+          });
+
+          const currentTerminal = this.terminalService.currentTerminal;
+
+          if (currentTerminal === undefined) {
+            alert('current terminal undefined!');
+            return;
           } else {
-            alert('Not Select file!');
+            const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+            const rootUri = firstRootUri.toString().replace('file://', '');
+
+            if (result) {
+              const runCommandOption = result.split(' ');
+              if (runCommandOption.length >= 1) {
+                const runDockerImgToContainer: CommandLineOptions = {
+                  cwd: rootUri,   // Command실행 경로
+                  args: runCommandOption,
+                  env: {}
+                };
+                currentTerminal.executeCommand(runDockerImgToContainer);
+              }
+            } else {
+              return;
+            }
           }
-        });
-      }
-    })
+        }
+      });
     );    
     }
 
