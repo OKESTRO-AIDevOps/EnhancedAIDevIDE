@@ -394,6 +394,18 @@ export class SampleCommandContribution implements CommandContribution {
       const subSubMenuPath5 = [...subMenuPath, 'init-project-directory-menu'];
       const subSubMenuPath6 = [...subMenuPath, 'run-command-menu'];
       const subSubMenuPathDockerCommand = [...subMenuPath, 'docker-command-menu'];
+      menus.registerSubmenu(subSubMenuPath1, 'Make Image', { order: '3' });
+      menus.registerSubmenu(subSubMenuPath5, 'Init Project Dir', { order: '3' });
+      menus.registerSubmenu(subSubMenuPath6, 'Run Command', { order: '4' });
+      menus.registerSubmenu(subSubMenuPathDockerCommand, 'Docker Command Menus', { order: '5' });
+      menus.registerMenuAction(subSubMenuPath1, {
+        commandId: JavaCommand.id,
+        order: '1'
+      });
+      menus.registerMenuAction(subSubMenuPath1, {
+        commandId: PythonCommand.id,
+        order: '2'
+    });
     }
   }
 
