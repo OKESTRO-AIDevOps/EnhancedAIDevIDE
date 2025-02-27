@@ -544,7 +544,56 @@ export class SampleCommandContribution implements CommandContribution {
           }
         });
       }
-    });
+    }
+    // Registry로 부터 사용할 이미지를 Pull하는 커멘드 메뉴
+    commands.registerCommand(RegistryPullImg, {
+        execute: async () => {
+          const result = await this.quickInputService.input({
+            placeHolder: 'Please input the Docker Image information! ex.gwangyong/keti-theia:1.0.8'
+          });
+          const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+          const rootUri = firstRootUri.toString().replace('file://', '');
+          const currentTerminal = this.terminalService.currentTerminal;
+  
+          if (result && currentTerminal) {
+            const RegistryPullImgCommand: CommandLineOptions = {
+              cwd: rootUri,   // Command실행 경로
+              args: ['docker', 'pull', result],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+              env: {}
+            };
+            currentTerminal.executeCommand(RegistryPullImgCommand);
+  
+            const printDockerImage: CommandLineOptions = {
+              cwd: rootUri,
+              args: ['docker', 'images'],
+              env: {}
+            };
+            currentTerminal.executeCommand(printDockerImage);
+          }
+        }
+      });
+  
+      menus.registerMenuAction(subMenuPath, {
+        commandId: MLPipelineCreateRunFunc.id,
+        order: '8'
+      });
+  
+      const subSubMenuPath1 = [...subMenuPath, 'make-sub-menu'];
+      const subSubMenuPath5 = [...subMenuPath, 'init-project-directory-menu'];
+      const subSubMenuPath6 = [...subMenuPath, 'run-command-menu'];
+      const subSubMenuPathDockerCommand = [...subMenuPath, 'docker-command-menu'];
+      menus.registerSubmenu(subSubMenuPath1, 'Make Image', { order: '3' });
+      menus.registerSubmenu(subSubMenuPath5, 'Init Project Dir', { order: '3' });
+      menus.registerSubmenu(subSubMenuPath6, 'Run Command', { order: '4' });
+      menus.registerSubmenu(subSubMenuPathDockerCommand, 'Docker Command Menus', { order: '5' });
+      menus.registerMenuAction(subSubMenuPath1, {
+        commandId: JavaCommand.id,
+        order: '1'
+      });
+      menus.registerMenuAction(subSubMenuPath1, {
+        commandId: PythonCommand.id,
+        order: '2'
+      });
     commands.registerCommand(runDockerImgCommand, {
       execute: async () => {
         const result = await this.quickInputService.input({
