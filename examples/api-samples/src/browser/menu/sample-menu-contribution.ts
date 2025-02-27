@@ -357,6 +357,17 @@ export class SampleCommandContribution implements CommandContribution {
         });
       }
     });
+    // Registry로 부터 사용할 이미지를 Pull하는 커멘드 메뉴
+    commands.registerCommand(RegistryPullImg, {
+        execute: async () => {
+          const result = await this.quickInputService.input({
+            placeHolder: 'Please input the Docker Image information! ex.gwangyong/keti-theia:1.0.8'
+          });
+          const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+          const rootUri = firstRootUri.toString().replace('file://', '');
+          const currentTerminal = this.terminalService.currentTerminal;
+        }
+      });
     }
   }
 
