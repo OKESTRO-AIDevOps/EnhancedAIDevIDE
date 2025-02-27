@@ -171,13 +171,39 @@ export class SampleMenuContribution implements MenuContribution {
         setTimeout(() => {
             const subMenuPath = [...MAIN_MENU_BAR, 'sample-menu'];
             menus.registerSubmenu(subMenuPath, 'Sample Menu', {
-                order: '2' // that should put the menu right next to the File menu
+              order: '2' // that should put the menu right next to the File menu
             });
-            
-        }, 10000);
-    }
-
-}
+            menus.registerMenuAction(subMenuPath, {
+              commandId: MakeCommand.id,
+              order: '0'
+            });
+            menus.registerMenuAction(subMenuPath, {
+              commandId: InitProjectDirectory.id,
+              order: '1'
+            });
+            menus.registerMenuAction(subMenuPath, {
+              commandId: RunCommand.id,
+              order: '2'
+            });
+            menus.registerMenuAction(subMenuPath, {
+              commandId: GenerateYAMLFileCommand.id,
+              order: '3'
+            });
+            menus.registerMenuAction(subMenuPath, {
+              commandId: DockerMenuCommand.id,
+              order: '4'
+            });
+            menus.registerMenuAction(subSubMenuPathDockerCommand, {
+              commandId: RegistryPullImg.id,
+              order: '4'
+            });
+            menus.registerMenuAction(subSubMenuPathDockerCommand, {
+              commandId: DockerLogin.id,
+              order: '5'
+            });
+          }
+        
+        }
 
 /**
  * Special menu node that is not backed by any commands and is always disabled.
