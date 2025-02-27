@@ -380,6 +380,19 @@ export class SampleCommandContribution implements CommandContribution {
     order: '1'
   });
 
+  menus.registerMenuAction(subSubMenuPath6, {
+    commandId: RunJavaCommand.id,
+    order: '1'
+  });
+  menus.registerMenuAction(subSubMenuPath6, {
+    commandId: RunPython3Command.id,
+    order: '2'
+  });
+  menus.registerMenuAction(subSubMenuPath6, {
+    commandId: RunGolangCommand.id,
+    order: '3'
+  });
+
 }
 
 }
