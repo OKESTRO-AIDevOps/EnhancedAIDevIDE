@@ -25,6 +25,22 @@ import { inject, injectable, interfaces } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { ReactNode } from '@theia/core/shared/react';
 
+export interface Pipeline {
+  duration: string;
+  name: string;
+  status: string;
+}
+
+export interface DidCreateNewResourceEvent {
+  uri: URI
+  parent: URI
+}
+export const DEFAULT_HTTP_OPTIONS = {
+  method: 'POST',
+  headers: {
+    Accept: 'application/octet-stream'
+  },
+};
 const InitGolangProject: Command = {
   id: 'init-golang-project',
   label: 'Init Go Project'
@@ -153,6 +169,123 @@ export class SampleCommandContribution implements CommandContribution {
           pick.hide();
         });
 
+         // Registry를 이용하기 접근하기위한 Docker login 메뉴
+    // 사용자로부터 ID(Username), PW(Password)를 입력받아 docker login을 수행
+        commands.registerCommand(DockerLogin, {
+          execute: async () => {
+            const dockerId = await this.quickInputService.input({
+              placeHolder: 'Please input your docker ID'
+            });
+          
+            const dockerPw = await this.quickInputService.input({
+              placeHolder: 'Please input your docker Password'
+            });
+          
+            const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+            const rootUri = firstRootUri.toString().replace('file://', '');
+            const currentTerminal = this.terminalService.currentTerminal;
+          
+            if (dockerId && dockerPw) {
+              if (currentTerminal) {
+                const RegistryPullImgCommand: CommandLineOptions = {
+                  cwd: rootUri,   // Command실행 경로
+                  args: ['docker', 'login', '-u', dockerId, '-p', dockerPw],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                  env: {}
+                };
+                currentTerminal.executeCommand(RegistryPullImgCommand);
+              }
+            }
+          }
+        });
+
+        commands.registerCommand(MLPipelineCreateRunFunc, {
+          execute: async () => {
+            try {
+              // YAML 파일 읽기
+              const yamlUri = await this.fileDialogService.showOpenDialog({
+                // title: MLPipelineCreateRunFunc.id,
+                title: 'Choose a YAML File to Create an ML Pipeline',
+                canSelectFiles: true,
+                canSelectFolders: false,
+                canSelectMany: false,
+              });
+              // let metadata: { name: string; description: string } | undefined;
+              let yamlfile: string | undefined;
+              if (yamlUri) {
+                const yamlResult = await this.readJsonFile(yamlUri);
+                if (yamlResult?.value) {
+                  yamlfile = yamlResult.value;
+                  console.log('Read YAML file: ', yamlfile);
+                } else {
+                  console.error('Cannot read YAML file');
+                  return;
+                }
+              }
+    
+              // Metadata 파일 읽기
+              const metadataUri = await this.fileDialogService.showOpenDialog({
+                // title: MLPipelineCreateRunFunc.id,
+                title: 'Choose a metadata YAML File to Create an ML Pipeline',
+                canSelectFiles: true,
+                canSelectFolders: false,
+                canSelectMany: false,
+              });
+    
+              let metadata: { checkpoint: boolean; name: string; description: string } | undefined;
+              if (metadataUri) {
+                const metadataResult = await this.readJsonFile(metadataUri);
+                if (metadataResult?.value) {
+                  console.log(metadataResult.value.toString());
+                  const lines = metadataResult.value.split('\n'); // 줄바꿈 기준으로 분리
+                  const checkpointLine = lines.find(line => line.trim().startsWith('checkpoint:'));
+                  const nameLine = lines.find(line => line.trim().startsWith('name:'));
+                  const descriptionLine = lines.find(line => line.trim().startsWith('description:'));
+    
+                  if (checkpointLine && nameLine && descriptionLine) {
+                    const checkpointMatch = checkpointLine?.match(/^checkpoint:\s*(.*)$/);
+                    const nameMatch = nameLine.match(/^name:\s*(.*)$/);
+                    const descriptionMatch = descriptionLine.match(/^description:\s*(.*)$/);
+    
+                    if (checkpointMatch?.[1] && nameMatch?.[1] && descriptionMatch?.[1]) {
+                      const value = checkpointMatch[1].trim();
+                      let isBoolean: boolean;
+    
+                      if (value === 'true') {
+                        isBoolean = true;
+                      } else if (value === 'false') {
+                        isBoolean = false;
+                      } else {
+                        throw new Error(`Invalid Boolean string: ${value}`);
+                      }
+                      metadata = {
+                        checkpoint: isBoolean,
+                        name: nameMatch[1].trim(),
+                        description: descriptionMatch[1].trim(),
+                      };
+                      console.log('Read metadata: ', metadata);
+                    } else {
+                      console.error('Invalid metadata format: Missing or malformed name/description');
+                      return;
+                    }
+                  }
+                } else {
+                  console.error('Cannot read metadata file');
+                  return;
+                }
+              }
+              if (yamlfile && metadata) {
+                console.log('Creating API with:', { yamlfile, metadata });
+                this.createRunAPI(yamlfile, metadata.checkpoint, metadata.name, metadata.description);
+              } else {
+                console.error('YAML file or Metadata is undefined');
+              }
+              
+            } catch (error) {
+              console.error('An error occurred:', error);
+            }
+          }
+        });
+
         // 사용자가 선택한 Golang 실행 커멘드 메뉴
         commands.registerCommand(RunGolangCommand, {
           execute: async () => {
@@ -183,6 +316,23 @@ export class SampleCommandContribution implements CommandContribution {
             });
           }
         })
+
+// Python 실행을 위한 도커파일 예제 생성 메뉴
+    commands.registerCommand(PythonCommand, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        this.fileService.createFileKetiPython(new URI(rootUri + '/Dockerfile'));
+      }
+    });
+    // Pipeline 관련 Yaml 스켈레톤 코드 생성 메뉴
+    commands.registerCommand(GenerateYAMLFileCommand, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        this.fileService.createFileKetiPythonSkeleton(new URI(rootUri + '/generateYAMLScript.py'));
+      }
+    });
         // 사용자가 선택한 Python 실행 커멘드 메뉴
         commands.registerCommand(RunPython3Command, {
           execute: async () => {
@@ -207,28 +357,64 @@ export class SampleCommandContribution implements CommandContribution {
                   };
                   currentTerminal.executeCommand(runPythonCommandLine);
                 }
-                // const currentTerminal = this.terminalService.currentTerminal;
-                // if (currentTerminal === undefined) {
-                //   alert('current terminal undefined!');
-                //   return;
-                // } else {
-                //   const fileFullPath = selectUri.toString();
-                //   const filePathElement = selectUri.toString().split('/');
-                //   const filename = filePathElement[filePathElement.length - 1];
-                //   const filePath = fileFullPath.replace(filename, '').replace('file://', '');
-
-                //   const runPythonCommandLine: CommandLineOptions = {
-                //     cwd: filePath,   // Command실행 경로
-                //     args: ['python3', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-                //     env: {}
-                //   };
-                //   currentTerminal.executeCommand(runPythonCommandLine);
-                // }
               } else {
                 alert('Not Select file!');
               }
             });
           }
+        });
+            // 사용자가 선택한 Java 실행 커멘드 메뉴
+        commands.registerCommand(RunJavaCommand, {
+          execute: () => {
+            this.fileDialogService.showOpenDialog({
+              title: RunJavaCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+            }).then((selectUri: URI | undefined) => {
+              if (selectUri) {
+                const currentTerminal = this.terminalService.currentTerminal;
+
+                if (currentTerminal === undefined) {
+                  alert('current terminal undefined!');
+                  return;
+                } else {
+                  // let filePath = selectUri.toString().replace('file://', '');
+                  const fileFullPath = selectUri.toString();
+                  const filePathElement = selectUri.toString().split('/');
+                  // alert('>>>'+ filePath[-1]);
+                  const filename = filePathElement[filePathElement.length - 1];
+                  const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+                  const runJavaCommandLine: CommandLineOptions = {
+                    cwd: filePath,   // Command실행 경로
+                    args: ['javac', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                    env: {}
+                  };
+                  currentTerminal.executeCommand(runJavaCommandLine);
+                  const runJavaCommandLine2: CommandLineOptions = {
+                    cwd: filePath,   // Command실행 경로
+                    args: ['java', filename.replace('.java', '')],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                    env: {}
+                  };
+                  currentTerminal.executeCommand(runJavaCommandLine2);
+                }
+              } else {
+                const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+                const rootUri = firstRootUri.toString().replace('file://', '');
+
+                if (result) {
+                  const runCommandOption = result.split(' ');
+                  if (runCommandOption.length >= 1) {
+                    const runDockerImgToContainer: CommandLineOptions = {
+                      cwd: rootUri,   // Command실행 경로
+                      args: runCommandOption,
+                      env: {}
+                    };
+                    currentTerminal.executeCommand(runDockerImgToContainer);
+                  }
+                } else {
+                  return;
+                }
+              }
+            }
         });
       }
     protected readJsonFile(fileUri: URI) {
@@ -294,69 +480,101 @@ export class SampleCommandContribution implements CommandContribution {
           this.fileService.createFileKetiJava(new URI(rootUri + '/Dockerfile'));
         }
       });
-      // Golang 실행을 위한 도커파일 예제 생성 메뉴
-      commands.registerCommand(GolangCommand, {
-        execute: () => {
-          const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
-          const rootUri = firstRootUri.toString().replace('file://', '');
-          this.fileService.createFileKetiGolang(new URI(rootUri + '/Dockerfile'));
-        }
-      });
-      // 현재 열린 디렉토리에 go-lang 프로젝트 구조 생성
-      commands.registerCommand(InitGolangProject, {
-        execute: () => {
-          const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
-          const rootUri = firstRootUri.toString().replace('file://', '');
-          alert(rootUri);
+	// Golang 실행을 위한 도커파일 예제 생성 메뉴
+    commands.registerCommand(GolangCommand, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        this.fileService.createFileKetiGolang(new URI(rootUri + '/Dockerfile'));
+      }
+    });
+	// 현재 열린 디렉토리에 go-lang 프로젝트 구조 생성
+    commands.registerCommand(InitGolangProject, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        alert(rootUri);
 
-          this.fileService.createFolder(new URI(rootUri + '/goProject'));
-          this.fileService.createFolder(new URI(rootUri + '/goProject'));
-          this.fileService.createFile(new URI(rootUri + '/goProject/Dockerfile'));
-          this.fileService.createFolder(new URI(rootUri + '/goProject/pkg'));
-          this.fileService.createFolder(new URI(rootUri + '/goProject/bin'));
-          this.fileService.createFolder(new URI(rootUri + '/goProject/src'));
-          this.fileService.createFile(new URI(rootUri + '/goProject/src/main.go'));
-        }
-      });
-      // 사용자가 선택한 Java 실행 커멘드 메뉴
-      commands.registerCommand(RunJavaCommand, {
-        execute: () => {
-          this.fileDialogService.showOpenDialog({
-            title: RunJavaCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
-          }).then((selectUri: URI | undefined) => {
-            if (selectUri) {
-              const currentTerminal = this.terminalService.currentTerminal;
+        this.fileService.createFolder(new URI(rootUri + '/goProject'));
+        this.fileService.createFolder(new URI(rootUri + '/goProject'));
+        this.fileService.createFile(new URI(rootUri + '/goProject/Dockerfile'));
+        this.fileService.createFolder(new URI(rootUri + '/goProject/pkg'));
+        this.fileService.createFolder(new URI(rootUri + '/goProject/bin'));
+        this.fileService.createFolder(new URI(rootUri + '/goProject/src'));
+        this.fileService.createFile(new URI(rootUri + '/goProject/src/main.go'));
+      }
+    });
+    commands.registerCommand(BuildDockerfileCommand, {
+      execute: async () => {
+        const result = await this.quickInputService.input({
+          placeHolder: 'Please input the Docker Image name:Image tag!'
+        });
 
-              if (currentTerminal === undefined) {
-                alert('current terminal undefined!');
-                return;
-              } else {
-                // let filePath = selectUri.toString().replace('file://', '');
-                const fileFullPath = selectUri.toString();
-                const filePathElement = selectUri.toString().split('/');
-                // alert('>>>'+ filePath[-1]);
-                const filename = filePathElement[filePathElement.length - 1];
-                const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+        this.fileDialogService.showOpenDialog({
+          title: BuildDockerfileCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+        }).then((selectUri: URI | undefined) => {
+          if (selectUri && result) {
+            const currentTerminal = this.terminalService.currentTerminal;
 
-                const runJavaCommandLine: CommandLineOptions = {
-                  cwd: filePath,   // Command실행 경로
-                  args: ['javac', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-                  env: {}
-                };
-                currentTerminal.executeCommand(runJavaCommandLine);
-                const runJavaCommandLine2: CommandLineOptions = {
-                  cwd: filePath,   // Command실행 경로
-                  args: ['java', filename.replace('.java', '')],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-                  env: {}
-                };
-                currentTerminal.executeCommand(runJavaCommandLine2);
-              }
+            if (currentTerminal === undefined) {
+              alert('current terminal undefined!');
+              return;
             } else {
-              alert('Not Select file!');
+              const fileFullPath = selectUri.toString();
+              const filePathElement = selectUri.toString().split('/');
+              const filename = filePathElement[filePathElement.length - 1];
+              const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+              const buildDockerfileToDockerImage: CommandLineOptions = {
+                cwd: filePath,   // Command실행 경로
+                args: ['docker', 'build', '-t', result, '-f', 'Dockerfile', '.'],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                env: {}
+              };
+              currentTerminal.executeCommand(buildDockerfileToDockerImage);
+
+              const printDockerImage: CommandLineOptions = {
+                cwd: filePath,
+                args: ['docker', 'images'],
+                env: {}
+              };
+              currentTerminal.executeCommand(printDockerImage);
             }
-          });
+          } else {
+            alert('Not Select file!');
+          }
+        });
+      }
+    });
+    commands.registerCommand(runDockerImgCommand, {
+      execute: async () => {
+        const result = await this.quickInputService.input({
+          placeHolder: 'Please input the Docker Image run command! ex. docker run -it -v "$(pwd):/home/test" -p 80:80 exImg:1.0.0 '
+        });
+
+        const currentTerminal = this.terminalService.currentTerminal;
+
+        if (currentTerminal === undefined) {
+          alert('current terminal undefined!');
+          return;
+      commands.registerCommand(RegistryPushImg, {
+      execute: async () => {
+        const result = await this.quickInputService.input({
+          placeHolder: 'Please input the Docker Image information! ex.gwangyong/keti-theia:1.0.8'
+        });
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        const currentTerminal = this.terminalService.currentTerminal;
+
+        if (result && currentTerminal) {
+          const RegistryPushImgCommand: CommandLineOptions = {
+            cwd: rootUri,   // Command실행 경로
+            args: ['docker', 'push', result],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+            env: {}
+          };
+          currentTerminal.executeCommand(RegistryPushImgCommand);
         }
-      });
+      }
+    });
     }
   }
 
