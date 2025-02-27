@@ -25,6 +25,12 @@ import { inject, injectable, interfaces } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { ReactNode } from '@theia/core/shared/react';
 
+export interface Pipeline {
+  duration: string;
+  name: string;
+  status: string;
+}
+
 const InitGolangProject: Command = {
   id: 'init-golang-project',
   label: 'Init Go Project'
