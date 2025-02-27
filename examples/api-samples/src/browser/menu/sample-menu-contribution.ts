@@ -232,6 +232,25 @@ export class SampleCommandContribution implements CommandContribution {
           }
         }
       });
+      commands.registerCommand(RegistryPushImg, {
+      execute: async () => {
+        const result = await this.quickInputService.input({
+          placeHolder: 'Please input the Docker Image information! ex.gwangyong/keti-theia:1.0.8'
+        });
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        const currentTerminal = this.terminalService.currentTerminal;
+
+        if (result && currentTerminal) {
+          const RegistryPushImgCommand: CommandLineOptions = {
+            cwd: rootUri,   // Command실행 경로
+            args: ['docker', 'push', result],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+            env: {}
+          };
+          currentTerminal.executeCommand(RegistryPushImgCommand);
+        }
+      }
+    });
     );    
     }
 
