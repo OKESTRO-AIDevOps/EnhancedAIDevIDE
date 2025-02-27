@@ -182,6 +182,89 @@ export class SampleCommandContribution implements CommandContribution {
           }
         });
 
+        commands.registerCommand(MLPipelineCreateRunFunc, {
+          execute: async () => {
+            try {
+              // YAML 파일 읽기
+              const yamlUri = await this.fileDialogService.showOpenDialog({
+                // title: MLPipelineCreateRunFunc.id,
+                title: 'Choose a YAML File to Create an ML Pipeline',
+                canSelectFiles: true,
+                canSelectFolders: false,
+                canSelectMany: false,
+              });
+              // let metadata: { name: string; description: string } | undefined;
+              let yamlfile: string | undefined;
+              if (yamlUri) {
+                const yamlResult = await this.readJsonFile(yamlUri);
+                if (yamlResult?.value) {
+                  yamlfile = yamlResult.value;
+                  console.log('Read YAML file: ', yamlfile);
+                } else {
+                  console.error('Cannot read YAML file');
+                  return;
+                }
+              }
+    
+              // Metadata 파일 읽기
+              const metadataUri = await this.fileDialogService.showOpenDialog({
+                // title: MLPipelineCreateRunFunc.id,
+                title: 'Choose a metadata YAML File to Create an ML Pipeline',
+                canSelectFiles: true,
+                canSelectFolders: false,
+                canSelectMany: false,
+              });
+    
+              let metadata: { checkpoint: boolean; name: string; description: string } | undefined;
+              if (metadataUri) {
+                const metadataResult = await this.readJsonFile(metadataUri);
+                if (metadataResult?.value) {
+                  console.log(metadataResult.value.toString());
+                  const lines = metadataResult.value.split('\n'); // 줄바꿈 기준으로 분리
+                  const checkpointLine = lines.find(line => line.trim().startsWith('checkpoint:'));
+                  const nameLine = lines.find(line => line.trim().startsWith('name:'));
+                  const descriptionLine = lines.find(line => line.trim().startsWith('description:'));
+    
+                  if (checkpointLine && nameLine && descriptionLine) {
+                    const checkpointMatch = checkpointLine?.match(/^checkpoint:\s*(.*)$/);
+                    const nameMatch = nameLine.match(/^name:\s*(.*)$/);
+                    const descriptionMatch = descriptionLine.match(/^description:\s*(.*)$/);
+    
+                    if (checkpointMatch?.[1] && nameMatch?.[1] && descriptionMatch?.[1]) {
+                      const value = checkpointMatch[1].trim();
+                      let isBoolean: boolean;
+    
+                      if (value === 'true') {
+                        isBoolean = true;
+                      } else if (value === 'false') {
+                        isBoolean = false;
+                      } else {
+                        throw new Error(`Invalid Boolean string: ${value}`);
+                      }
+                      metadata = {
+                        checkpoint: isBoolean,
+                        name: nameMatch[1].trim(),
+                        description: descriptionMatch[1].trim(),
+                      };
+                      console.log('Read metadata: ', metadata);
+                    } else {
+                      console.error('Invalid metadata format: Missing or malformed name/description');
+                      return;
+                    }
+                  }
+                } else {
+                  console.error('Cannot read metadata file');
+                  return;
+                }
+              }
+    
+              
+            } catch (error) {
+              console.error('An error occurred:', error);
+            }
+          }
+        });
+
         // 사용자가 선택한 Golang 실행 커멘드 메뉴
         commands.registerCommand(RunGolangCommand, {
           execute: async () => {
