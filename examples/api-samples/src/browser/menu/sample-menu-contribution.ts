@@ -35,7 +35,12 @@ export interface DidCreateNewResourceEvent {
   uri: URI
   parent: URI
 }
-
+export const DEFAULT_HTTP_OPTIONS = {
+  method: 'POST',
+  headers: {
+    Accept: 'application/octet-stream'
+  },
+};
 const InitGolangProject: Command = {
   id: 'init-golang-project',
   label: 'Init Go Project'
