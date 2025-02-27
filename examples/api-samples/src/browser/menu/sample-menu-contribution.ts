@@ -294,69 +294,69 @@ export class SampleCommandContribution implements CommandContribution {
           this.fileService.createFileKetiJava(new URI(rootUri + '/Dockerfile'));
         }
       });
-	// Golang 실행을 위한 도커파일 예제 생성 메뉴
-    commands.registerCommand(GolangCommand, {
-      execute: () => {
-        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
-        const rootUri = firstRootUri.toString().replace('file://', '');
-        this.fileService.createFileKetiGolang(new URI(rootUri + '/Dockerfile'));
-      }
-    });
-	// 현재 열린 디렉토리에 go-lang 프로젝트 구조 생성
-    commands.registerCommand(InitGolangProject, {
-      execute: () => {
-        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
-        const rootUri = firstRootUri.toString().replace('file://', '');
-        alert(rootUri);
+      // Golang 실행을 위한 도커파일 예제 생성 메뉴
+      commands.registerCommand(GolangCommand, {
+        execute: () => {
+          const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+          const rootUri = firstRootUri.toString().replace('file://', '');
+          this.fileService.createFileKetiGolang(new URI(rootUri + '/Dockerfile'));
+        }
+      });
+      // 현재 열린 디렉토리에 go-lang 프로젝트 구조 생성
+      commands.registerCommand(InitGolangProject, {
+        execute: () => {
+          const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+          const rootUri = firstRootUri.toString().replace('file://', '');
+          alert(rootUri);
 
-        this.fileService.createFolder(new URI(rootUri + '/goProject'));
-        this.fileService.createFolder(new URI(rootUri + '/goProject'));
-        this.fileService.createFile(new URI(rootUri + '/goProject/Dockerfile'));
-        this.fileService.createFolder(new URI(rootUri + '/goProject/pkg'));
-        this.fileService.createFolder(new URI(rootUri + '/goProject/bin'));
-        this.fileService.createFolder(new URI(rootUri + '/goProject/src'));
-        this.fileService.createFile(new URI(rootUri + '/goProject/src/main.go'));
-      }
-    });
-    // 사용자가 선택한 Java 실행 커멘드 메뉴
-    commands.registerCommand(RunJavaCommand, {
-      execute: () => {
-        this.fileDialogService.showOpenDialog({
-          title: RunJavaCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
-        }).then((selectUri: URI | undefined) => {
-          if (selectUri) {
-            const currentTerminal = this.terminalService.currentTerminal;
+          this.fileService.createFolder(new URI(rootUri + '/goProject'));
+          this.fileService.createFolder(new URI(rootUri + '/goProject'));
+          this.fileService.createFile(new URI(rootUri + '/goProject/Dockerfile'));
+          this.fileService.createFolder(new URI(rootUri + '/goProject/pkg'));
+          this.fileService.createFolder(new URI(rootUri + '/goProject/bin'));
+          this.fileService.createFolder(new URI(rootUri + '/goProject/src'));
+          this.fileService.createFile(new URI(rootUri + '/goProject/src/main.go'));
+        }
+      });
+      // 사용자가 선택한 Java 실행 커멘드 메뉴
+      commands.registerCommand(RunJavaCommand, {
+        execute: () => {
+          this.fileDialogService.showOpenDialog({
+            title: RunJavaCommand.id, canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+          }).then((selectUri: URI | undefined) => {
+            if (selectUri) {
+              const currentTerminal = this.terminalService.currentTerminal;
 
-            if (currentTerminal === undefined) {
-              alert('current terminal undefined!');
-              return;
+              if (currentTerminal === undefined) {
+                alert('current terminal undefined!');
+                return;
+              } else {
+                // let filePath = selectUri.toString().replace('file://', '');
+                const fileFullPath = selectUri.toString();
+                const filePathElement = selectUri.toString().split('/');
+                // alert('>>>'+ filePath[-1]);
+                const filename = filePathElement[filePathElement.length - 1];
+                const filePath = fileFullPath.replace(filename, '').replace('file://', '');
+
+                const runJavaCommandLine: CommandLineOptions = {
+                  cwd: filePath,   // Command실행 경로
+                  args: ['javac', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                  env: {}
+                };
+                currentTerminal.executeCommand(runJavaCommandLine);
+                const runJavaCommandLine2: CommandLineOptions = {
+                  cwd: filePath,   // Command실행 경로
+                  args: ['java', filename.replace('.java', '')],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                  env: {}
+                };
+                currentTerminal.executeCommand(runJavaCommandLine2);
+              }
             } else {
-              // let filePath = selectUri.toString().replace('file://', '');
-              const fileFullPath = selectUri.toString();
-              const filePathElement = selectUri.toString().split('/');
-              // alert('>>>'+ filePath[-1]);
-              const filename = filePathElement[filePathElement.length - 1];
-              const filePath = fileFullPath.replace(filename, '').replace('file://', '');
-
-              const runJavaCommandLine: CommandLineOptions = {
-                cwd: filePath,   // Command실행 경로
-                args: ['javac', filename],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-                env: {}
-              };
-              currentTerminal.executeCommand(runJavaCommandLine);
-              const runJavaCommandLine2: CommandLineOptions = {
-                cwd: filePath,   // Command실행 경로
-                args: ['java', filename.replace('.java', '')],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
-                env: {}
-              };
-              currentTerminal.executeCommand(runJavaCommandLine2);
+              alert('Not Select file!');
             }
-          } else {
-            alert('Not Select file!');
-          }
-        });
-      }
-    });
+          });
+        }
+      });
     }
   }
 
@@ -370,6 +370,16 @@ export class SampleCommandContribution implements CommandContribution {
     });
 
   }, 10000);
+
+  menus.registerMenuAction(subSubMenuPath1, {
+    commandId: GolangCommand.id,
+    order: '3'
+  });
+  menus.registerMenuAction(subSubMenuPath5, {
+    commandId: InitGolangProject.id,
+    order: '1'
+  });
+
 }
 
 }
