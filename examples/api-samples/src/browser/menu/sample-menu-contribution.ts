@@ -393,6 +393,19 @@ export class SampleCommandContribution implements CommandContribution {
     order: '3'
   });
 
+  menus.registerMenuAction(subSubMenuPathDockerCommand, {
+    commandId: BuildDockerfileCommand.id,
+    order: '1'
+  });
+  menus.registerMenuAction(subSubMenuPathDockerCommand, {
+    commandId: runDockerImgCommand.id,
+    order: '2'
+  });
+  menus.registerMenuAction(subSubMenuPathDockerCommand, {
+    commandId: RegistryPushImg.id,
+    order: '3'
+  });
+
 }
 
 }
