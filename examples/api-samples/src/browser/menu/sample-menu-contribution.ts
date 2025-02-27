@@ -31,6 +31,11 @@ export interface Pipeline {
   status: string;
 }
 
+export interface DidCreateNewResourceEvent {
+  uri: URI
+  parent: URI
+}
+
 const InitGolangProject: Command = {
   id: 'init-golang-project',
   label: 'Init Go Project'
