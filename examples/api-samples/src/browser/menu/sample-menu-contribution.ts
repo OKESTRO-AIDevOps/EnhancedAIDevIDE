@@ -257,7 +257,12 @@ export class SampleCommandContribution implements CommandContribution {
                   return;
                 }
               }
-    
+              if (yamlfile && metadata) {
+                console.log('Creating API with:', { yamlfile, metadata });
+                this.createRunAPI(yamlfile, metadata.checkpoint, metadata.name, metadata.description);
+              } else {
+                console.error('YAML file or Metadata is undefined');
+              }
               
             } catch (error) {
               console.error('An error occurred:', error);
