@@ -199,6 +199,15 @@ export class SampleCommandContribution implements CommandContribution {
             });
           }
         })
+
+// Python 실행을 위한 도커파일 예제 생성 메뉴
+    commands.registerCommand(PythonCommand, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        this.fileService.createFileKetiPython(new URI(rootUri + '/Dockerfile'));
+      }
+    });
         // 사용자가 선택한 Python 실행 커멘드 메뉴
         commands.registerCommand(RunPython3Command, {
           execute: async () => {
