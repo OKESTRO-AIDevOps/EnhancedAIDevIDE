@@ -153,6 +153,35 @@ export class SampleCommandContribution implements CommandContribution {
           pick.hide();
         });
 
+         // Registry를 이용하기 접근하기위한 Docker login 메뉴
+    // 사용자로부터 ID(Username), PW(Password)를 입력받아 docker login을 수행
+        commands.registerCommand(DockerLogin, {
+          execute: async () => {
+            const dockerId = await this.quickInputService.input({
+              placeHolder: 'Please input your docker ID'
+            });
+          
+            const dockerPw = await this.quickInputService.input({
+              placeHolder: 'Please input your docker Password'
+            });
+          
+            const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+            const rootUri = firstRootUri.toString().replace('file://', '');
+            const currentTerminal = this.terminalService.currentTerminal;
+          
+            if (dockerId && dockerPw) {
+              if (currentTerminal) {
+                const RegistryPullImgCommand: CommandLineOptions = {
+                  cwd: rootUri,   // Command실행 경로
+                  args: ['docker', 'login', '-u', dockerId, '-p', dockerPw],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                  env: {}
+                };
+                currentTerminal.executeCommand(RegistryPullImgCommand);
+              }
+            }
+          }
+        });
+
         // 사용자가 선택한 Golang 실행 커멘드 메뉴
         commands.registerCommand(RunGolangCommand, {
           execute: async () => {
