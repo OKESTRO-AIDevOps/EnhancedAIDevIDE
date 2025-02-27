@@ -169,6 +169,123 @@ export class SampleCommandContribution implements CommandContribution {
           pick.hide();
         });
 
+         // Registry를 이용하기 접근하기위한 Docker login 메뉴
+    // 사용자로부터 ID(Username), PW(Password)를 입력받아 docker login을 수행
+        commands.registerCommand(DockerLogin, {
+          execute: async () => {
+            const dockerId = await this.quickInputService.input({
+              placeHolder: 'Please input your docker ID'
+            });
+          
+            const dockerPw = await this.quickInputService.input({
+              placeHolder: 'Please input your docker Password'
+            });
+          
+            const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+            const rootUri = firstRootUri.toString().replace('file://', '');
+            const currentTerminal = this.terminalService.currentTerminal;
+          
+            if (dockerId && dockerPw) {
+              if (currentTerminal) {
+                const RegistryPullImgCommand: CommandLineOptions = {
+                  cwd: rootUri,   // Command실행 경로
+                  args: ['docker', 'login', '-u', dockerId, '-p', dockerPw],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+                  env: {}
+                };
+                currentTerminal.executeCommand(RegistryPullImgCommand);
+              }
+            }
+          }
+        });
+
+        commands.registerCommand(MLPipelineCreateRunFunc, {
+          execute: async () => {
+            try {
+              // YAML 파일 읽기
+              const yamlUri = await this.fileDialogService.showOpenDialog({
+                // title: MLPipelineCreateRunFunc.id,
+                title: 'Choose a YAML File to Create an ML Pipeline',
+                canSelectFiles: true,
+                canSelectFolders: false,
+                canSelectMany: false,
+              });
+              // let metadata: { name: string; description: string } | undefined;
+              let yamlfile: string | undefined;
+              if (yamlUri) {
+                const yamlResult = await this.readJsonFile(yamlUri);
+                if (yamlResult?.value) {
+                  yamlfile = yamlResult.value;
+                  console.log('Read YAML file: ', yamlfile);
+                } else {
+                  console.error('Cannot read YAML file');
+                  return;
+                }
+              }
+    
+              // Metadata 파일 읽기
+              const metadataUri = await this.fileDialogService.showOpenDialog({
+                // title: MLPipelineCreateRunFunc.id,
+                title: 'Choose a metadata YAML File to Create an ML Pipeline',
+                canSelectFiles: true,
+                canSelectFolders: false,
+                canSelectMany: false,
+              });
+    
+              let metadata: { checkpoint: boolean; name: string; description: string } | undefined;
+              if (metadataUri) {
+                const metadataResult = await this.readJsonFile(metadataUri);
+                if (metadataResult?.value) {
+                  console.log(metadataResult.value.toString());
+                  const lines = metadataResult.value.split('\n'); // 줄바꿈 기준으로 분리
+                  const checkpointLine = lines.find(line => line.trim().startsWith('checkpoint:'));
+                  const nameLine = lines.find(line => line.trim().startsWith('name:'));
+                  const descriptionLine = lines.find(line => line.trim().startsWith('description:'));
+    
+                  if (checkpointLine && nameLine && descriptionLine) {
+                    const checkpointMatch = checkpointLine?.match(/^checkpoint:\s*(.*)$/);
+                    const nameMatch = nameLine.match(/^name:\s*(.*)$/);
+                    const descriptionMatch = descriptionLine.match(/^description:\s*(.*)$/);
+    
+                    if (checkpointMatch?.[1] && nameMatch?.[1] && descriptionMatch?.[1]) {
+                      const value = checkpointMatch[1].trim();
+                      let isBoolean: boolean;
+    
+                      if (value === 'true') {
+                        isBoolean = true;
+                      } else if (value === 'false') {
+                        isBoolean = false;
+                      } else {
+                        throw new Error(`Invalid Boolean string: ${value}`);
+                      }
+                      metadata = {
+                        checkpoint: isBoolean,
+                        name: nameMatch[1].trim(),
+                        description: descriptionMatch[1].trim(),
+                      };
+                      console.log('Read metadata: ', metadata);
+                    } else {
+                      console.error('Invalid metadata format: Missing or malformed name/description');
+                      return;
+                    }
+                  }
+                } else {
+                  console.error('Cannot read metadata file');
+                  return;
+                }
+              }
+              if (yamlfile && metadata) {
+                console.log('Creating API with:', { yamlfile, metadata });
+                this.createRunAPI(yamlfile, metadata.checkpoint, metadata.name, metadata.description);
+              } else {
+                console.error('YAML file or Metadata is undefined');
+              }
+              
+            } catch (error) {
+              console.error('An error occurred:', error);
+            }
+          }
+        });
+
         // 사용자가 선택한 Golang 실행 커멘드 메뉴
         commands.registerCommand(RunGolangCommand, {
           execute: async () => {
