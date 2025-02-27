@@ -208,6 +208,14 @@ export class SampleCommandContribution implements CommandContribution {
         this.fileService.createFileKetiPython(new URI(rootUri + '/Dockerfile'));
       }
     });
+    // Pipeline 관련 Yaml 스켈레톤 코드 생성 메뉴
+    commands.registerCommand(GenerateYAMLFileCommand, {
+      execute: () => {
+        const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
+        const rootUri = firstRootUri.toString().replace('file://', '');
+        this.fileService.createFileKetiPythonSkeleton(new URI(rootUri + '/generateYAMLScript.py'));
+      }
+    });
         // 사용자가 선택한 Python 실행 커멘드 메뉴
         commands.registerCommand(RunPython3Command, {
           execute: async () => {
