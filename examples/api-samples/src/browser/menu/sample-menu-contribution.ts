@@ -366,6 +366,22 @@ export class SampleCommandContribution implements CommandContribution {
           const firstRootUri = this.workspaceService.tryGetRoots()[0]?.resource;
           const rootUri = firstRootUri.toString().replace('file://', '');
           const currentTerminal = this.terminalService.currentTerminal;
+  
+          if (result && currentTerminal) {
+            const RegistryPullImgCommand: CommandLineOptions = {
+              cwd: rootUri,   // Command실행 경로
+              args: ['docker', 'pull', result],    // 실행될 커멘트를 Arg단위로 쪼개서 삽입
+              env: {}
+            };
+            currentTerminal.executeCommand(RegistryPullImgCommand);
+  
+            const printDockerImage: CommandLineOptions = {
+              cwd: rootUri,
+              args: ['docker', 'images'],
+              env: {}
+            };
+            currentTerminal.executeCommand(printDockerImage);
+          }
         }
       });
     }
